@@ -26,32 +26,32 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemDto> getByOwner(@RequestHeader(value="X-Sharer-User-Id") long ownerId){
+    public List<ItemDto> getByOwner(@RequestHeader(value = "X-Sharer-User-Id") long ownerId) {
         return itemService.getByOwner(ownerId);
     }
 
-    @GetMapping(path = "/{itemId}", name="itemId")
-    public ItemDto getById(@PathVariable long itemId){
+    @GetMapping(path = "/{itemId}", name = "itemId")
+    public ItemDto getById(@PathVariable long itemId) {
         return itemService.getById(itemId);
     }
 
     @GetMapping(path = "/search")
-    public List<ItemDto> search(@RequestParam(name = "text") String text){
+    public List<ItemDto> search(@RequestParam(name = "text") String text) {
         return itemService.search(text);
     }
 
     @PostMapping
-    public ItemDto add(@RequestHeader(value="X-Sharer-User-Id") long ownerId, @RequestBody ItemDto itemDto){
+    public ItemDto add(@RequestHeader(value = "X-Sharer-User-Id") long ownerId, @RequestBody ItemDto itemDto) {
         return itemService.add(itemDto, ownerId);
     }
 
-    @PatchMapping(path = "/{itemId}", name="itemId")
-    public ItemDto update(@RequestHeader(value="X-Sharer-User-Id") long ownerId, @PathVariable long itemId, @RequestBody ItemDto itemDto){
+    @PatchMapping(path = "/{itemId}", name = "itemId")
+    public ItemDto update(@RequestHeader(value = "X-Sharer-User-Id") long ownerId, @PathVariable long itemId, @RequestBody ItemDto itemDto) {
         return itemService.update(itemId, itemDto, ownerId);
     }
 
-    @DeleteMapping(path = "/{itemId}", name="itemId")
-    public void delete(@RequestHeader(value="X-Sharer-User-Id") long ownerId, @PathVariable long itemId){
+    @DeleteMapping(path = "/{itemId}", name = "itemId")
+    public void delete(@RequestHeader(value = "X-Sharer-User-Id") long ownerId, @PathVariable long itemId) {
         itemService.delete(itemId, ownerId);
     }
 }

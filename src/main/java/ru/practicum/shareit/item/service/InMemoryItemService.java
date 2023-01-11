@@ -37,11 +37,11 @@ public class InMemoryItemService implements ItemService {
 
     @Override
     public List<ItemDto> search(String query) {
-        if(query == null){
+        if (query == null) {
             throw new BadRequestException("Invalid search text");
         }
 
-        if(query.isBlank()){
+        if (query.isBlank()) {
             return new ArrayList<>();
         }
 
@@ -79,13 +79,13 @@ public class InMemoryItemService implements ItemService {
     private void partialUpdate(long itemId, Item item) {
         Item updatedItem = findById(itemId);
 
-        if(item.getName() != null) {
+        if (item.getName() != null) {
             updatedItem.setName(item.getName());
         }
-        if(item.getDescription() != null) {
+        if (item.getDescription() != null) {
             updatedItem.setDescription(item.getDescription());
         }
-        if(item.getAvailable() != null) {
+        if (item.getAvailable() != null) {
             updatedItem.setAvailable(item.getAvailable());
         }
 
@@ -94,7 +94,7 @@ public class InMemoryItemService implements ItemService {
 
     private void checkOwnerPermission(long itemId, long ownerId) {
         Item item = findById(itemId);
-        if(item.getOwner() == null || item.getOwner().getId() != ownerId) {
+        if (item.getOwner() == null || item.getOwner().getId() != ownerId) {
             throw new DataNotFoundException("Invalid owner for this item");
         }
     }
