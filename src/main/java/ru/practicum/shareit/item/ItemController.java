@@ -20,10 +20,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/items")
 public class ItemController {
+    private static final String HEADER_USER_ID_KEY = "X-Sharer-User-Id";
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemDto> getByOwner(@RequestHeader(value = "X-Sharer-User-Id") long ownerId) {
+    public List<ItemDto> getByOwner(@RequestHeader(value = HEADER_USER_ID_KEY) long ownerId) {
         return itemService.getByOwner(ownerId);
     }
 
@@ -38,17 +39,21 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto add(@RequestHeader(value = "X-Sharer-User-Id") long ownerId, @RequestBody ItemDto itemDto) {
+    public ItemDto add(@RequestHeader(value = HEADER_USER_ID_KEY) long ownerId,
+                       @RequestBody ItemDto itemDto) {
         return itemService.add(itemDto, ownerId);
     }
 
     @PatchMapping(path = "/{itemId}", name = "itemId")
-    public ItemDto update(@RequestHeader(value = "X-Sharer-User-Id") long ownerId, @PathVariable long itemId, @RequestBody ItemDto itemDto) {
+    public ItemDto update(@RequestHeader(value = HEADER_USER_ID_KEY) long ownerId,
+                          @PathVariable long itemId,
+                          @RequestBody ItemDto itemDto) {
         return itemService.update(itemId, itemDto, ownerId);
     }
 
     @DeleteMapping(path = "/{itemId}", name = "itemId")
-    public void delete(@RequestHeader(value = "X-Sharer-User-Id") long ownerId, @PathVariable long itemId) {
+    public void delete(@RequestHeader(value = HEADER_USER_ID_KEY) long ownerId,
+                       @PathVariable long itemId) {
         itemService.delete(itemId, ownerId);
     }
 }
