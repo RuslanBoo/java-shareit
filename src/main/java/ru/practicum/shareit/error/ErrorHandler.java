@@ -2,6 +2,8 @@ package ru.practicum.shareit.error;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -9,6 +11,9 @@ import ru.practicum.shareit.error.model.BadRequestException;
 import ru.practicum.shareit.error.model.ConflictException;
 import ru.practicum.shareit.error.model.DataNotFoundException;
 import ru.practicum.shareit.error.model.ErrorResponse;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestControllerAdvice
 @Slf4j
@@ -19,6 +24,14 @@ public class ErrorHandler {
     public ErrorResponse handleBadRequestException(final BadRequestException badRequestException) {
         log.error("Error code: 400.", badRequestException);
         return new ErrorResponse(badRequestException.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException methodArgumentNotValidException) {
+        FieldError error = methodArgumentNotValidException.getBindingResult().getFieldErrors().get(0);
+        log.error("Error code: 400. " + error.getDefaultMessage(), error.getDefaultMessage());
+        return new ErrorResponse(error.getDefaultMessage());
     }
 
     @ExceptionHandler

@@ -2,7 +2,6 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.error.model.BadRequestException;
 import ru.practicum.shareit.error.model.ConflictException;
 import ru.practicum.shareit.error.model.DataNotFoundException;
 import ru.practicum.shareit.user.UserMapper;
@@ -11,7 +10,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,18 +33,18 @@ public class InMemoryUserService implements UserService {
 
     @Override
     public UserDto add(UserDto userDto) {
-        User user = prepareDao(userDto, true);
+        User user = prepareDao(userDto);
         long newUserId = userRepository.add(user);
 
-        return userMapper.toDto(userRepository.getById(newUserId));
+        return prepareDto(userRepository.getById(newUserId));
     }
 
     @Override
     public UserDto update(long userId, UserDto userDto) {
-        User user = prepareDao(userDto, false);
+        User user = prepareDao(userDto);
         partialUpdate(userId, user);
 
-        return userMapper.toDto(userRepository.getById(userId));
+        return prepareDto(userRepository.getById(userId));
     }
 
     @Override
@@ -65,28 +63,6 @@ public class InMemoryUserService implements UserService {
         return user;
     }
 
-    private User prepareDao(UserDto userDto, boolean isCreating) {
-        if (isCreating) {
-            if (userDto.getName() == null || userDto.getName().isBlank()) {
-                throw new BadRequestException("Invalid user name");
-            }
-            if (userDto.getEmail() == null || isEmailInvalid(userDto.getEmail())) {
-                throw new BadRequestException("Invalid user email");
-            }
-        } else {
-            if (userDto.getName() != null && userDto.getName().isBlank()) {
-                throw new BadRequestException("Invalid user name");
-            }
-            if (userDto.getEmail() != null && isEmailInvalid(userDto.getEmail())) {
-                throw new BadRequestException("Invalid user email");
-            }
-        }
-        if (isEmailExist(userDto.getEmail())) {
-            throw new ConflictException("User email already exist");
-        }
-        return userMapper.fromDto(userDto);
-    }
-
     private void partialUpdate(long userId, User user) {
         User updatedUser = findById(userId);
 
@@ -100,14 +76,20 @@ public class InMemoryUserService implements UserService {
         userRepository.update(userId, updatedUser);
     }
 
-    private boolean isEmailInvalid(String email) {
-        final String regex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
-        return !Pattern.compile(regex).matcher(email).matches();
-    }
-
     private boolean isEmailExist(String email) {
         return userRepository.getAll()
                 .stream()
                 .anyMatch(user -> user.getEmail().equals(email));
+    }
+
+    private User prepareDao(UserDto userDto) {
+        if (isEmailExist(userDto.getEmail())) {
+            throw new ConflictException("User email already exist");
+        }
+        return userMapper.fromDto(userDto);
+    }
+
+    private UserDto prepareDto(User user) {
+        return userMapper.toDto(user);
     }
 }

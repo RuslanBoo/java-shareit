@@ -53,20 +53,20 @@ public class InMemoryItemService implements ItemService {
 
     @Override
     public ItemDto add(ItemDto itemDto, long ownerId) {
-        Item item = prepareDao(itemDto, true);
+        Item item = prepareDao(itemDto);
         item.setOwner(userService.findById(ownerId));
         long newItemId = itemRepository.add(item);
 
-        return itemMapper.toDto(itemRepository.getById(newItemId));
+        return prepareDto(itemRepository.getById(newItemId));
     }
 
     @Override
     public ItemDto update(long itemId, ItemDto itemDto, long ownerId) {
-        Item item = prepareDao(itemDto, false);
+        Item item = prepareDao(itemDto);
         checkOwnerPermission(itemId, ownerId);
         partialUpdate(itemId, item);
 
-        return itemMapper.toDto(itemRepository.getById(itemId));
+        return prepareDto(itemRepository.getById(itemId));
     }
 
     @Override
@@ -109,19 +109,11 @@ public class InMemoryItemService implements ItemService {
         return item;
     }
 
-    private Item prepareDao(ItemDto itemDto, boolean isCreating) {
-        if (isCreating) {
-            if (itemDto.getName() == null || itemDto.getName().isBlank()) {
-                throw new BadRequestException("Invalid item name");
-            }
-            if (itemDto.getDescription() == null || itemDto.getDescription().isBlank()) {
-                throw new BadRequestException("Invalid item description");
-            }
-            if (itemDto.getAvailable() == null) {
-                throw new BadRequestException("Invalid item available");
-            }
-        }
-
+    private Item prepareDao(ItemDto itemDto) {
         return itemMapper.fromDto(itemDto);
+    }
+
+    private ItemDto prepareDto(Item item) {
+        return itemMapper.toDto(item);
     }
 }
