@@ -8,12 +8,12 @@ import ru.practicum.shareit.user.model.User;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    @Mapping(target="id", source = "id")
-    @Mapping(target="name", source = "name")
-    @Mapping(target="email", source = "email")
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "email", source = "email")
     UserDto toDto(User user);
 
-    @Mapping(target="name", source = "name")
-    @Mapping(target="email", source = "email")
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "email", source = "email")
     User fromDto(UserDto userDto);
 }

@@ -12,9 +12,6 @@ import ru.practicum.shareit.error.model.ConflictException;
 import ru.practicum.shareit.error.model.DataNotFoundException;
 import ru.practicum.shareit.error.model.ErrorResponse;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
