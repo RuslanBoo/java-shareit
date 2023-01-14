@@ -1,20 +1,21 @@
 package ru.practicum.shareit.item;
 
+import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
-@Mapper(componentModel = "spring")
+@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        componentModel = "spring")
 public interface ItemMapper {
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "name", source = "name")
-    @Mapping(target = "description", source = "description")
-    @Mapping(target = "available", source = "available")
     ItemDto toDto(Item item);
 
-    @Mapping(target = "name", source = "name")
-    @Mapping(target = "description", source = "description")
-    @Mapping(target = "available", source = "available")
+    @Mapping(target = "id", ignore = true)
     Item fromDto(ItemDto itemDto);
+
+    @InheritConfiguration
+    void updateItem(ItemDto itemDto, @MappingTarget Item item);
 }

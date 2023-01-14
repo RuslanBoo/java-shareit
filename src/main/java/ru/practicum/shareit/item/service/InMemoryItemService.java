@@ -62,9 +62,8 @@ public class InMemoryItemService implements ItemService {
 
     @Override
     public ItemDto update(long itemId, ItemDto itemDto, long ownerId) {
-        Item item = prepareDao(itemDto);
         checkOwnerPermission(itemId, ownerId);
-        partialUpdate(itemId, item);
+        partialUpdate(itemId, itemDto);
 
         return prepareDto(itemRepository.getById(itemId));
     }
@@ -76,18 +75,9 @@ public class InMemoryItemService implements ItemService {
         itemRepository.delete(itemId);
     }
 
-    private void partialUpdate(long itemId, Item item) {
+    private void partialUpdate(long itemId, ItemDto itemDto) {
         Item updatedItem = findById(itemId);
-
-        if (item.getName() != null) {
-            updatedItem.setName(item.getName());
-        }
-        if (item.getDescription() != null) {
-            updatedItem.setDescription(item.getDescription());
-        }
-        if (item.getAvailable() != null) {
-            updatedItem.setAvailable(item.getAvailable());
-        }
+        itemMapper.updateItem(itemDto, updatedItem);
 
         itemRepository.update(itemId, updatedItem);
     }

@@ -1,19 +1,22 @@
 package ru.practicum.shareit.user;
 
+import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
-@Mapper(componentModel = "spring")
+@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        componentModel = "spring")
 public interface UserMapper {
 
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "name", source = "name")
-    @Mapping(target = "email", source = "email")
     UserDto toDto(User user);
 
-    @Mapping(target = "name", source = "name")
-    @Mapping(target = "email", source = "email")
+    @Mapping(target = "id", ignore = true)
     User fromDto(UserDto userDto);
+
+    @InheritConfiguration
+    void updateUser(UserDto userDto, @MappingTarget User user);
 }

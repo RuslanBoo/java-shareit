@@ -41,8 +41,10 @@ public class InMemoryUserService implements UserService {
 
     @Override
     public UserDto update(long userId, UserDto userDto) {
-        User user = prepareDao(userDto);
-        partialUpdate(userId, user);
+        if (userDto.getEmail() != null && isEmailExist(userDto.getEmail())) {
+            throw new ConflictException("User email already exist");
+        }
+        partialUpdate(userId, userDto);
 
         return prepareDto(userRepository.getById(userId));
     }
@@ -63,15 +65,9 @@ public class InMemoryUserService implements UserService {
         return user;
     }
 
-    private void partialUpdate(long userId, User user) {
+    private void partialUpdate(long userId, UserDto userDto) {
         User updatedUser = findById(userId);
-
-        if (user.getName() != null) {
-            updatedUser.setName(user.getName());
-        }
-        if (user.getEmail() != null) {
-            updatedUser.setEmail(user.getEmail());
-        }
+        userMapper.updateUser(userDto, updatedUser);
 
         userRepository.update(userId, updatedUser);
     }
