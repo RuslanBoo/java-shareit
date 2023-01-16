@@ -7,6 +7,7 @@ import ru.practicum.shareit.user.model.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -35,6 +36,14 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public User getById(long userId) {
         return users.get(userId);
+    }
+
+    @Override
+    public Optional<User> getByEmail(String email) {
+        return users.values()
+                .stream()
+                .filter(user -> user.getEmail().equals(email))
+                .findFirst();
     }
 
     @Override

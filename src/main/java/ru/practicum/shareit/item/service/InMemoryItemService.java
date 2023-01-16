@@ -30,7 +30,7 @@ public class InMemoryItemService implements ItemService {
     public List<ItemDto> getByOwner(long ownerId) {
         return itemRepository.getAll()
                 .stream()
-                .filter(item -> item.getOwner().getId() == ownerId)
+                .filter(item -> isOwner(item, ownerId))
                 .map(itemMapper::toDto)
                 .collect(Collectors.toList());
     }
@@ -97,6 +97,10 @@ public class InMemoryItemService implements ItemService {
         }
 
         return item;
+    }
+
+    private boolean isOwner(Item item, long ownerId) {
+        return item.getOwner().getId() == ownerId;
     }
 
     private Item prepareDao(ItemDto itemDto) {

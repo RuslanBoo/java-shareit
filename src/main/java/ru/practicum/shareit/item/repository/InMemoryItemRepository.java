@@ -49,7 +49,11 @@ public class InMemoryItemRepository implements ItemRepository {
         return items.values()
                 .stream()
                 .filter(Item::getAvailable)
-                .filter(item -> item.getName().toLowerCase().contains(query) || item.getDescription().toLowerCase().contains(query))
+                .filter(item -> isSuggest(item, query))
                 .collect(Collectors.toList());
+    }
+
+    public boolean isSuggest(Item item, String query) {
+        return item.getName().toLowerCase().contains(query) || item.getDescription().toLowerCase().contains(query);
     }
 }

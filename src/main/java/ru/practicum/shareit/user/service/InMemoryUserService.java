@@ -73,9 +73,7 @@ public class InMemoryUserService implements UserService {
     }
 
     private boolean isEmailExist(String email) {
-        return userRepository.getAll()
-                .stream()
-                .anyMatch(user -> user.getEmail().equals(email));
+        return userRepository.getByEmail(email).isPresent();
     }
 
     private User prepareDao(UserDto userDto) {
