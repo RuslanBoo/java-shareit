@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class InDBItemService implements ItemService{
+public class InDBItemService implements ItemService {
     private final InDBItemRepository inDBItemRepository;
     private final InDBUserService inDBUserService;
     private final ItemMapper itemMapper;

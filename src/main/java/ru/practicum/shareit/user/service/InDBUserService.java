@@ -74,7 +74,7 @@ public class InDBUserService implements UserService {
 
     private void checkEmailOwner(Long userId, String email) {
         Optional<User> user = inDBUserRepository.findByEmail(email);
-        if(user.isPresent() && user.get().getId() != userId){
+        if (user.isPresent() && user.get().getId() != userId) {
             throw new ConflictException("User email already exist");
         }
     }
