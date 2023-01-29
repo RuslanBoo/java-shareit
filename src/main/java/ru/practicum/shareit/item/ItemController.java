@@ -27,12 +27,12 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemDto> getByOwner(@RequestHeader(value = HEADER_USER_ID_KEY) long ownerId) {
+    public List<ItemDto> getByOwner(@RequestHeader(value = HEADER_USER_ID_KEY) Long ownerId) {
         return itemService.getByOwner(ownerId);
     }
 
     @GetMapping(path = "/{itemId}", name = "itemId")
-    public ItemDto getById(@PathVariable long itemId) {
+    public ItemDto getById(@PathVariable Long itemId) {
         return itemService.getById(itemId);
     }
 
@@ -42,21 +42,21 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto add(@RequestHeader(value = HEADER_USER_ID_KEY) long ownerId,
+    public ItemDto add(@RequestHeader(value = HEADER_USER_ID_KEY) Long ownerId,
                        @RequestBody @Validated(CreateItemDto.class) ItemDto itemDto) {
         return itemService.add(itemDto, ownerId);
     }
 
     @PatchMapping(path = "/{itemId}", name = "itemId")
-    public ItemDto update(@RequestHeader(value = HEADER_USER_ID_KEY) long ownerId,
-                          @PathVariable long itemId,
+    public ItemDto update(@RequestHeader(value = HEADER_USER_ID_KEY) Long ownerId,
+                          @PathVariable Long itemId,
                           @RequestBody @Valid ItemDto itemDto) {
         return itemService.update(itemId, itemDto, ownerId);
     }
 
     @DeleteMapping(path = "/{itemId}", name = "itemId")
-    public void delete(@RequestHeader(value = HEADER_USER_ID_KEY) long ownerId,
-                       @PathVariable long itemId) {
+    public void delete(@RequestHeader(value = HEADER_USER_ID_KEY) Long ownerId,
+                       @PathVariable Long itemId) {
         itemService.delete(itemId, ownerId);
     }
 }

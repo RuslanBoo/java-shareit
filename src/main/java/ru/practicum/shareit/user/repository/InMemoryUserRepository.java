@@ -12,29 +12,29 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class InMemoryUserRepository implements UserRepository {
-    private long nextId = 1;
+    private Long nextId = 1L;
     private final Map<Long, User> users;
 
     @Override
-    public long add(User user) {
+    public Long add(User user) {
         user.setId(nextId++);
         users.put(user.getId(), user);
         return user.getId();
     }
 
     @Override
-    public void update(long userId, User user) {
+    public void update(Long userId, User user) {
         delete(userId);
         users.put(userId, user);
     }
 
     @Override
-    public void delete(long userId) {
+    public void delete(Long userId) {
         users.remove(userId);
     }
 
     @Override
-    public User getById(long userId) {
+    public User getById(Long userId) {
         return users.get(userId);
     }
 

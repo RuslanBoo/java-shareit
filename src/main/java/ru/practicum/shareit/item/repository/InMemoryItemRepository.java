@@ -12,11 +12,11 @@ import java.util.stream.Collectors;
 @Repository
 @RequiredArgsConstructor
 public class InMemoryItemRepository implements ItemRepository {
-    private long nextId = 1;
+    private Long nextId = 1L;
     private final Map<Long, Item> items;
 
     @Override
-    public long add(Item item) {
+    public Long add(Item item) {
         item.setId(nextId++);
         items.put(item.getId(), item);
 
@@ -24,18 +24,18 @@ public class InMemoryItemRepository implements ItemRepository {
     }
 
     @Override
-    public void update(long itemId, Item item) {
+    public void update(Long itemId, Item item) {
         delete(itemId);
         items.put(itemId, item);
     }
 
     @Override
-    public void delete(long itemId) {
+    public void delete(Long itemId) {
         items.remove(itemId);
     }
 
     @Override
-    public Item getById(long itemId) {
+    public Item getById(Long itemId) {
         return items.get(itemId);
     }
 

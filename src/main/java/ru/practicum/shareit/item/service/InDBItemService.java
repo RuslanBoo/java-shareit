@@ -1,92 +1,76 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.error.model.BadRequestException;
 import ru.practicum.shareit.error.model.DataNotFoundException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.user.service.InMemoryUserService;
+import ru.practicum.shareit.item.repository.InDBItemRepository;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.service.InDBUserService;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Primary
 @RequiredArgsConstructor
-public class InMemoryItemService implements ItemService {
-    private final ItemRepository itemRepository;
+public class InDBItemService implements ItemService{
+    private final InDBItemRepository inDBItemRepository;
+    private final InDBUserService inDBUserService;
     private final ItemMapper itemMapper;
-    private final InMemoryUserService userService;
 
     @Override
-    @Transactional(readOnly = true)
     public ItemDto getById(Long itemId) {
-        return itemMapper.toDto(findById(itemId));
+        return prepareDto(findById(itemId));
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ItemDto> getByOwner(Long ownerId) {
-        return itemRepository.getAll()
-                .stream()
-                .filter(item -> isOwner(item, ownerId))
+        User owner = inDBUserService.findById(ownerId);
+        return inDBItemRepository.getByOwner(owner).stream()
                 .map(itemMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ItemDto> search(String query) {
-        if (query == null) {
-            throw new BadRequestException("Invalid search text");
-        }
-
-        if (query.isBlank()) {
-            return new ArrayList<>();
-        }
-
-        return itemRepository.search(query.toLowerCase())
-                .stream()
+        return inDBItemRepository.searchByText(query).stream()
                 .map(itemMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    @Transactional
     public ItemDto add(ItemDto itemDto, Long ownerId) {
         Item item = prepareDao(itemDto);
-        item.setOwner(userService.findById(ownerId));
-        Long newItemId = itemRepository.add(item);
+        item.setOwner(inDBUserService.findById(ownerId));
 
-        return prepareDto(itemRepository.getById(newItemId));
+        return prepareDto(inDBItemRepository.save(item));
     }
 
     @Override
-    @Transactional
     public ItemDto update(Long itemId, ItemDto itemDto, Long ownerId) {
         checkOwnerPermission(itemId, ownerId);
         partialUpdate(itemId, itemDto);
 
-        return prepareDto(itemRepository.getById(itemId));
+        return getById(itemId);
     }
 
     @Override
-    @Transactional
     public void delete(Long itemId, Long ownerId) {
-        findById(itemId);
-        checkOwnerPermission(itemId, ownerId);
-        itemRepository.delete(itemId);
+        Item deletedItem = findById(itemId);
+        isOwner(deletedItem, ownerId);
+        inDBItemRepository.delete(deletedItem);
     }
 
     private void partialUpdate(Long itemId, ItemDto itemDto) {
         Item updatedItem = findById(itemId);
         itemMapper.updateItem(itemDto, updatedItem);
 
-        itemRepository.update(itemId, updatedItem);
+        inDBItemRepository.save(updatedItem);
     }
 
     private void checkOwnerPermission(Long itemId, Long ownerId) {
@@ -97,13 +81,13 @@ public class InMemoryItemService implements ItemService {
     }
 
     private Item findById(Long itemId) {
-        Item item = itemRepository.getById(itemId);
+        Optional<Item> item = inDBItemRepository.findById(itemId);
 
-        if (item == null) {
+        if (item.isEmpty()) {
             throw new DataNotFoundException("Item not found");
         }
 
-        return item;
+        return item.get();
     }
 
     private boolean isOwner(Item item, Long ownerId) {
@@ -117,4 +101,5 @@ public class InMemoryItemService implements ItemService {
     private ItemDto prepareDto(Item item) {
         return itemMapper.toDto(item);
     }
+
 }

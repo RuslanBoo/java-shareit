@@ -1,86 +1,82 @@
 package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.error.model.ConflictException;
 import ru.practicum.shareit.error.model.DataNotFoundException;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.user.repository.InDBUserRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Primary
 @RequiredArgsConstructor
-public class InMemoryUserService implements UserService {
-    private final UserRepository userRepository;
+public class InDBUserService implements UserService {
+    private final InDBUserRepository inDBUserRepository;
     private final UserMapper userMapper;
 
-    @Transactional(readOnly = true)
     @Override
     public UserDto getById(Long userId) {
-        return userMapper.toDto(findById(userId));
+        return prepareDto(findById(userId));
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<UserDto> getAll() {
-        return userRepository.getAll()
+        return inDBUserRepository.findAll()
                 .stream()
                 .map(userMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    @Transactional
     public UserDto add(UserDto userDto) {
-        User user = prepareDao(userDto);
-        Long newUserId = userRepository.add(user);
-
-        return prepareDto(userRepository.getById(newUserId));
+        User newUser = inDBUserRepository.save(prepareDao(userDto));
+        return prepareDto(newUser);
     }
 
     @Override
-    @Transactional
     public UserDto update(Long userId, UserDto userDto) {
-        if (userDto.getEmail() != null && isEmailExist(userDto.getEmail())) {
-            throw new ConflictException("User email already exist");
-        }
-        partialUpdate(userId, userDto);
+        checkEmailOwner(userId, userDto.getEmail());
 
-        return prepareDto(userRepository.getById(userId));
+        User updatedUser = userMapper.fromDto(getById(userId));
+        userMapper.updateUser(userDto, updatedUser);
+        updatedUser.setId(userId);
+
+        User newUser = inDBUserRepository.save(updatedUser);
+
+        return prepareDto(newUser);
     }
 
     @Override
-    @Transactional
     public void delete(Long userId) {
-        findById(userId);
-        userRepository.delete(userId);
+        inDBUserRepository.deleteById(userId);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public User findById(Long userId) {
-        User user = userRepository.getById(userId);
-        if (user == null) {
+        Optional<User> user = inDBUserRepository.findById(userId);
+        if (user.isEmpty()) {
             throw new DataNotFoundException("User not found");
         }
 
-        return user;
-    }
-
-    private void partialUpdate(Long userId, UserDto userDto) {
-        User updatedUser = findById(userId);
-        userMapper.updateUser(userDto, updatedUser);
-
-        userRepository.update(userId, updatedUser);
+        return user.get();
     }
 
     private boolean isEmailExist(String email) {
-        return userRepository.getByEmail(email).isPresent();
+        return inDBUserRepository.findByEmail(email).isPresent();
+    }
+
+    private void checkEmailOwner(Long userId, String email) {
+        Optional<User> user = inDBUserRepository.findByEmail(email);
+        if(user.isPresent() && user.get().getId() != userId){
+            throw new ConflictException("User email already exist");
+        }
     }
 
     private User prepareDao(UserDto userDto) {

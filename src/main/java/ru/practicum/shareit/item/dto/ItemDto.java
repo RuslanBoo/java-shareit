@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @Builder
 public class ItemDto {
-    private long id;
+    private Long id;
 
     @NotNull(message = "Empty item name", groups = CreateItemDto.class)
     @NotBlank(message = "Invalid item name", groups = {CreateItemDto.class, UpdateItemDto.class})

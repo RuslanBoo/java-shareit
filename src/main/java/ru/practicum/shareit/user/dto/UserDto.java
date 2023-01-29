@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @Builder
 public class UserDto {
-    private long id;
+    private Long id;
 
     @NotNull(message = "Empty user name", groups = CreateUserDto.class)
     @NotBlank(message = "Invalid user name", groups = {CreateUserDto.class, UpdateUserDto.class})
