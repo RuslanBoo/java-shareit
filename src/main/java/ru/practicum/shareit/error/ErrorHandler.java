@@ -1,8 +1,11 @@
 package ru.practicum.shareit.error;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -26,9 +29,15 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException methodArgumentNotValidException) {
-        FieldError error = methodArgumentNotValidException.getBindingResult().getFieldErrors().get(0);
-        log.error("Error code: 400. " + error.getDefaultMessage(), error.getDefaultMessage());
-        return new ErrorResponse(error.getDefaultMessage());
+        if(!methodArgumentNotValidException.getBindingResult().getFieldErrors().isEmpty()) {
+            FieldError error = methodArgumentNotValidException.getBindingResult().getFieldErrors().get(0);
+            log.error("Error code: 400. " + error.getDefaultMessage(), error.getDefaultMessage());
+            return new ErrorResponse(error.getDefaultMessage());
+        } else {
+            ObjectError error = methodArgumentNotValidException.getBindingResult().getGlobalErrors().get(0);
+            log.error("Error code: 400. " + error.getDefaultMessage(), error.getDefaultMessage());
+            return new ErrorResponse(error.getDefaultMessage());
+        }
     }
 
     @ExceptionHandler
@@ -43,6 +52,13 @@ public class ErrorHandler {
     public ErrorResponse handleConflictException(final ConflictException conflictException) {
         log.error("Error code: 409.", conflictException);
         return new ErrorResponse(conflictException.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleDataIntegrityViolationException(final DataIntegrityViolationException dataIntegrityViolationException) {
+        log.error("Error code: 409.", dataIntegrityViolationException);
+        return new ErrorResponse(dataIntegrityViolationException.getMessage());
     }
 
     @ExceptionHandler

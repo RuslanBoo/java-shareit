@@ -82,6 +82,18 @@ public class InMemoryItemService implements ItemService {
         itemRepository.delete(itemId);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Item findById(Long itemId) {
+        Item item = itemRepository.getById(itemId);
+
+        if (item == null) {
+            throw new DataNotFoundException("Item not found");
+        }
+
+        return item;
+    }
+
     private void partialUpdate(Long itemId, ItemDto itemDto) {
         Item updatedItem = findById(itemId);
         itemMapper.updateItem(itemDto, updatedItem);
@@ -94,16 +106,6 @@ public class InMemoryItemService implements ItemService {
         if (item.getOwner() == null || item.getOwner().getId() != ownerId) {
             throw new DataNotFoundException("Invalid owner for this item");
         }
-    }
-
-    private Item findById(Long itemId) {
-        Item item = itemRepository.getById(itemId);
-
-        if (item == null) {
-            throw new DataNotFoundException("Item not found");
-        }
-
-        return item;
     }
 
     private boolean isOwner(Item item, Long ownerId) {

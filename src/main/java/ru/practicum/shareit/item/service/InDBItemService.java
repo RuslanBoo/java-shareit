@@ -11,6 +11,7 @@ import ru.practicum.shareit.item.repository.InDBItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.InDBUserService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,9 +39,15 @@ public class InDBItemService implements ItemService {
 
     @Override
     public List<ItemDto> search(String query) {
-        return inDBItemRepository.searchByText(query).stream()
-                .map(itemMapper::toDto)
-                .collect(Collectors.toList());
+        List<ItemDto> result = new ArrayList<>();
+
+        if(!query.isBlank()){
+            result = inDBItemRepository.findByTextLike(query).stream()
+                    .map(itemMapper::toDto)
+                    .collect(Collectors.toList());
+        }
+
+        return result;
     }
 
     @Override
@@ -66,6 +73,17 @@ public class InDBItemService implements ItemService {
         inDBItemRepository.delete(deletedItem);
     }
 
+    @Override
+    public Item findById(Long itemId) {
+        Optional<Item> item = inDBItemRepository.findById(itemId);
+
+        if (item.isEmpty()) {
+            throw new DataNotFoundException("Item not found");
+        }
+
+        return item.get();
+    }
+
     private void partialUpdate(Long itemId, ItemDto itemDto) {
         Item updatedItem = findById(itemId);
         itemMapper.updateItem(itemDto, updatedItem);
@@ -78,16 +96,6 @@ public class InDBItemService implements ItemService {
         if (item.getOwner() == null || item.getOwner().getId() != ownerId) {
             throw new DataNotFoundException("Invalid owner for this item");
         }
-    }
-
-    private Item findById(Long itemId) {
-        Optional<Item> item = inDBItemRepository.findById(itemId);
-
-        if (item.isEmpty()) {
-            throw new DataNotFoundException("Item not found");
-        }
-
-        return item.get();
     }
 
     private boolean isOwner(Item item, Long ownerId) {

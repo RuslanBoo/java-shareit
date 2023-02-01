@@ -1,23 +1,30 @@
 package ru.practicum.shareit.booking.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.booking.BookingStatus;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.booking.enums.BookingStatus;
+import ru.practicum.shareit.booking.validation.DatesValidation;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.user.dto.UserDto;
 
+import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-bookings.
- */
 @Data
 @Builder
+@DatesValidation(message = "Date start must be earlier date end")
 public class BookingDto {
     private Long id;
-    private Item item;
-    private User booker;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Long itemId;
+    private ItemDto item;
+    private UserDto booker;
+
+    @FutureOrPresent
     private LocalDateTime start;
+    @Future
     private LocalDateTime end;
     private BookingStatus status;
 }

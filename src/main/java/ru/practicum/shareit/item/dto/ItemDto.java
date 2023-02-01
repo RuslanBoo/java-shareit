@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import ru.practicum.shareit.booking.dto.BookingDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -22,4 +23,7 @@ public class ItemDto {
 
     @NotNull(message = "Empty item available", groups = CreateItemDto.class)
     private Boolean available;
+
+    private BookingDto lastBookingDto;
+    private BookingDto nextBookingDto;
 }

@@ -15,6 +15,9 @@ import java.util.List;
 public interface InDBItemRepository extends JpaRepository<Item, Long> {
     List<Item> getByOwner(User user);
 
-    @Query("SELECT i FROM Item i WHERE i.name LIKE %:text% OR i.description LIKE %:text%")
-    List<Item> searchByText(@Param("text") String text);
+    @Query(value = "select i from Item i " +
+            "where upper(i.name) like concat('%', upper(:text), '%') or " +
+            "upper(i.description) like concat('%', upper(:text), '%')" +
+            "and i.available = true")
+    List<Item> findByTextLike(@Param("text") String text);
 }

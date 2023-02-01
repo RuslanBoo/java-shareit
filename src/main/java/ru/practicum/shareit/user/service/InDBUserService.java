@@ -10,6 +10,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.InDBUserRepository;
 
+import javax.persistence.NonUniqueResultException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -68,10 +69,6 @@ public class InDBUserService implements UserService {
         return user.get();
     }
 
-    private boolean isEmailExist(String email) {
-        return inDBUserRepository.findByEmail(email).isPresent();
-    }
-
     private void checkEmailOwner(Long userId, String email) {
         Optional<User> user = inDBUserRepository.findByEmail(email);
         if (user.isPresent() && user.get().getId() != userId) {
@@ -80,9 +77,6 @@ public class InDBUserService implements UserService {
     }
 
     private User prepareDao(UserDto userDto) {
-        if (isEmailExist(userDto.getEmail())) {
-            throw new ConflictException("User email already exist");
-        }
         return userMapper.fromDto(userDto);
     }
 
