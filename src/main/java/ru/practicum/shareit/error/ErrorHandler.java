@@ -12,6 +12,8 @@ import ru.practicum.shareit.error.model.ConflictException;
 import ru.practicum.shareit.error.model.DataNotFoundException;
 import ru.practicum.shareit.error.model.ErrorResponse;
 
+import javax.persistence.EntityNotFoundException;
+
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
@@ -37,6 +39,14 @@ public class ErrorHandler {
         log.error("Error code: 404.", dataNotFoundException);
         return new ErrorResponse(dataNotFoundException.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleEntityNotFoundException(final EntityNotFoundException entityNotFoundException) {
+        log.error("Error code: 404.", entityNotFoundException);
+        return new ErrorResponse(entityNotFoundException.getMessage());
+    }
+
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
