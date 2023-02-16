@@ -68,7 +68,7 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
 
-        return itemRepository.findAllByText(query.toUpperCase())
+        return itemRepository.findAllByText(query)
                 .stream()
                 .map(itemMapper::toDto)
                 .collect(Collectors.toList());

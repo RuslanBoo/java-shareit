@@ -34,9 +34,10 @@ public class Booking {
     @Column(name = "start_date")
     private LocalDateTime start;
 
-    @Column(name = "end_date")
+    @Column(name = "end_date", nullable = false)
     private LocalDateTime end;
 
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
 }
