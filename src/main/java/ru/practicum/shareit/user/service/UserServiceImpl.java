@@ -5,16 +5,17 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.error.model.ConflictException;
 import ru.practicum.shareit.error.model.DataNotFoundException;
 import ru.practicum.shareit.user.UserMapper;
+import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class InMemoryUserService implements UserService {
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
@@ -25,7 +26,7 @@ public class InMemoryUserService implements UserService {
 
     @Override
     public List<UserDto> getAll() {
-        return userRepository.getAll()
+        return userRepository.findAll()
                 .stream()
                 .map(userMapper::toDto)
                 .collect(Collectors.toList());
@@ -34,9 +35,8 @@ public class InMemoryUserService implements UserService {
     @Override
     public UserDto add(UserDto userDto) {
         User user = prepareDao(userDto);
-        long newUserId = userRepository.add(user);
 
-        return prepareDto(userRepository.getById(newUserId));
+        return prepareDto(userRepository.save(user));
     }
 
     @Override
@@ -51,35 +51,31 @@ public class InMemoryUserService implements UserService {
 
     @Override
     public void delete(long userId) {
-        findById(userId);
-        userRepository.delete(userId);
+        User user = findById(userId);
+        userRepository.delete(user);
     }
 
     @Override
     public User findById(long userId) {
-        User user = userRepository.getById(userId);
-        if (user == null) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
             throw new DataNotFoundException("User not found");
         }
 
-        return user;
+        return user.get();
     }
 
     private void partialUpdate(long userId, UserDto userDto) {
         User updatedUser = findById(userId);
         userMapper.updateUser(userDto, updatedUser);
-
-        userRepository.update(userId, updatedUser);
+        userRepository.save(updatedUser);
     }
 
     private boolean isEmailExist(String email) {
-        return userRepository.getByEmail(email).isPresent();
+        return userRepository.findByEmail(email).isPresent();
     }
 
     private User prepareDao(UserDto userDto) {
-        if (isEmailExist(userDto.getEmail())) {
-            throw new ConflictException("User email already exist");
-        }
         return userMapper.fromDto(userDto);
     }
 
