@@ -27,15 +27,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    private final BookingRepository bookingRepository;
-
-    private final BookingMapper bookingMapper;
-    private final ItemRepository itemRepository;
-    private final ItemMapper itemMapper;
     private final UserServiceImpl userService;
-
+    private final ItemRepository itemRepository;
+    private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
-
+    private final ItemMapper itemMapper;
+    private final BookingMapper bookingMapper;
     private final CommentMapper commentMapper;
 
     @Override
@@ -101,7 +98,7 @@ public class ItemServiceImpl implements ItemService {
     public CommentDto commentSave(long itemId, long userId, CommentDto commentDto) {
         Optional<Item> item = itemRepository.findById(itemId);
         User user = userService.findById(userId);
-        List<Booking> bookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
+        List<Booking> bookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now(), null);
 
         if (item.isEmpty()) {
             throw new DataNotFoundException("Item not found");
