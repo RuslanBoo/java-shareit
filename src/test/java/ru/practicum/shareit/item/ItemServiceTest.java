@@ -71,13 +71,13 @@ class ItemServiceTest {
                 TestHelper.createItem(2, true, null),
                 TestHelper.createItem(3, true, null)
         );
-        List<ItemDto> itemDtos = items
+        List<ItemDto> itemsDto = items
                 .stream()
                 .map(itemMapper::toDto)
                 .collect(Collectors.toList());
 
         when(itemRepository.findAllByText(anyString())).thenReturn(items);
-        assertThat(itemService.search("text")).isEqualTo(itemDtos);
+        assertThat(itemService.search("text")).isEqualTo(itemsDto);
     }
 
     @Test
@@ -93,17 +93,17 @@ class ItemServiceTest {
         long requestId = 1;
         User user = TestHelper.createUser(userId);
         ItemRequest itemRequest = TestHelper.createItemRequest(requestId, LocalDateTime.now(), user);
-        ItemDto ItemDto = TestHelper.createItemDto(true, requestId);
+        ItemDto itemDto = TestHelper.createItemDto(true, requestId);
 
         when(userService.getById(userId)).thenReturn(userMapper.toDto(user));
         when(itemRequestRepository.findById(userId)).thenReturn(Optional.of(itemRequest));
         when(itemRepository.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
-        ItemDto itemDto = itemService.add(ItemDto, userId);
+        ItemDto resultItemDto = itemService.add(itemDto, userId);
 
-        assertThat(itemDto.getRequestId()).isEqualTo(requestId);
-        assertThat(itemDto.getAvailable()).isTrue();
-        assertThat(itemDto.getComments()).isNull();
+        assertThat(resultItemDto.getRequestId()).isEqualTo(requestId);
+        assertThat(resultItemDto.getAvailable()).isTrue();
+        assertThat(resultItemDto.getComments()).isNull();
     }
 
     @Test
