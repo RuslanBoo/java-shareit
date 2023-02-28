@@ -17,7 +17,7 @@ import ru.practicum.shareit.error.ErrorHandler;
 import ru.practicum.shareit.error.model.DataNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.service.UserServiceImpl;
 import ru.practicum.shareit.utils.TestHelper;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ class UserControllerTest {
     private MockMvc mockMvc;
 
     @Mock
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @InjectMocks
     private UserController userController;
