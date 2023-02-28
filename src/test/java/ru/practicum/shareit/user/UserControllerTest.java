@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -55,13 +56,13 @@ class UserControllerTest {
 
     @Test
     void getAll_shouldReturnListOfUsers() throws Exception {
-        List<User> users = List.of(
+        List<UserDto> users = Stream.of(
                 TestHelper.createUser(1),
                 TestHelper.createUser(2),
                 TestHelper.createUser(3)
-        );
+        ).map(userMapper::toDto).collect(Collectors.toList());
 
-        when(userService.getAll()).thenReturn(users.stream().map(userMapper::toDto).collect(Collectors.toList()));
+        when(userService.getAll()).thenReturn(users);
 
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
@@ -98,13 +99,13 @@ class UserControllerTest {
     @Test
     void getById_shouldReturnUser() throws Exception {
         long userId = 1;
-        User user = TestHelper.createUser(userId);
+        UserDto userDto = userMapper.toDto(TestHelper.createUser(userId));
 
-        when(userService.getById(userId)).thenReturn(userMapper.toDto(user));
+        when(userService.getById(userId)).thenReturn(userDto);
 
         mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(user)));
+                .andExpect(content().json(objectMapper.writeValueAsString(userDto)));
     }
 
     @Test
