@@ -7,7 +7,7 @@ import ru.practicum.shareit.user.model.User;
 @Component
 public class Helper {
 
-    public static UserDto createUserDto(long id){
+    public static UserDto createUserDto(long id) {
         return UserDto.builder()
                 .id(id)
                 .name("Test name" + id)
@@ -15,7 +15,7 @@ public class Helper {
                 .build();
     }
 
-    public static User createUser(long id){
+    public static User createUser(long id) {
         return User.builder()
                 .id(id)
                 .name("Test name" + id)
