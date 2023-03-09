@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
         }
         partialUpdate(userId, userDto);
 
-        return prepareDto(userRepository.getById(userId));
+        return prepareDto(findById(userId));
     }
 
     @Override

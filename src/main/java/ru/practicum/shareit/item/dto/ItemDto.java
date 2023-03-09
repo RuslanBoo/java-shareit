@@ -35,4 +35,6 @@ public class ItemDto {
 
     @Transient
     private List<CommentDto> comments;
+
+    private Long requestId;
 }
