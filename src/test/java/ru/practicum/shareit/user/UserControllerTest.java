@@ -2,30 +2,27 @@ package ru.practicum.shareit.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.error.ErrorHandler;
 import ru.practicum.shareit.error.model.DataNotFoundException;
+import ru.practicum.shareit.testUtils.Helper;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserServiceImpl;
-import ru.practicum.shareit.utils.TestHelper;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -43,8 +40,7 @@ class UserControllerTest {
     @InjectMocks
     private UserController userController;
 
-    @Spy
-    private UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+    private Helper helper = new Helper();
 
     @BeforeEach
     void setMockMvc() {
@@ -54,13 +50,25 @@ class UserControllerTest {
                 .build();
     }
 
+    @SneakyThrows
     @Test
-    void getAll_shouldReturnListOfUsers() throws Exception {
-        List<UserDto> users = Stream.of(
-                TestHelper.createUser(1),
-                TestHelper.createUser(2),
-                TestHelper.createUser(3)
-        ).map(userMapper::toDto).collect(Collectors.toList());
+    void getAll_shouldReturnEmptyList() {
+        List<UserDto> emptyList = new ArrayList<>();
+        when(userService.getAll()).thenReturn(emptyList);
+
+        mockMvc.perform(get("/users"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(emptyList)));
+    }
+
+    @SneakyThrows
+    @Test
+    void getAll_shouldReturnListOfUsersDto() {
+        List<UserDto> users = List.of(
+                helper.createUserDto(1),
+                helper.createUserDto(2),
+                helper.createUserDto(3)
+        );
 
         when(userService.getAll()).thenReturn(users);
 
@@ -69,106 +77,89 @@ class UserControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(users)));
     }
 
+    @SneakyThrows
     @Test
-    void getAll_shouldReturnEmptyList() throws Exception {
-        List<User> users = Collections.emptyList();
+    void getById_shouldDataNotFoundException() {
+        when(userService.getById(anyLong())).thenThrow(new DataNotFoundException("User not found"));
 
-        when(userService.getAll()).thenReturn(new ArrayList<>());
-
-        mockMvc.perform(get("/users"))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(users)));
+        mockMvc.perform(get("/users/1"))
+                .andExpect(status().isNotFound());
     }
 
+    @SneakyThrows
     @Test
-    void getById_shouldReturnInternalServerError() throws Exception {
-        mockMvc.perform(get("/users/abc"))
+    void getById_shouldInternalServerErrorException() {
+        mockMvc.perform(get("/users/test"))
                 .andExpect(status().isInternalServerError());
     }
 
+    @SneakyThrows
     @Test
-    void getById_shouldReturnNotFound() throws Exception {
+    void create_shouldReturnUserDto() {
+        long userId = 1;
+        UserDto userDto = helper.createUserDto(userId);
+        String jsonDto = objectMapper.writeValueAsString(userDto);
+
+        when(userService.add(any(UserDto.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(jsonDto))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonDto));
+    }
+
+    @SneakyThrows
+    @Test
+    void create_shouldReturnBadRequestException() {
+        long userId = 1;
+        UserDto userDto = UserDto.builder().build();
+        String jsonDto = objectMapper.writeValueAsString(userDto);
+
+        mockMvc.perform(post("/users/").contentType(MediaType.APPLICATION_JSON).content(jsonDto))
+                .andExpect(status().isBadRequest());
+    }
+
+    @SneakyThrows
+    @Test
+    void update_shouldReturnDataNotFoundException() {
+        long userId = 1;
+        UserDto userDto = UserDto.builder().build();
+        String jsonDto = objectMapper.writeValueAsString(userDto);
+
+        when(userService.update(anyLong(), any(UserDto.class))).thenThrow(new DataNotFoundException("User not found"));
+
+        mockMvc.perform(patch("/users/" + userId).contentType(MediaType.APPLICATION_JSON).content(jsonDto))
+                .andExpect(status().isNotFound());
+
+    }
+
+    @SneakyThrows
+    @Test
+    void update_shouldReturnUserDto() {
+        long userId = 1;
+        UserDto userDto = UserDto.builder().build();
+        String jsonDto = objectMapper.writeValueAsString(userDto);
+
+        when(userService.update(anyLong(), any(UserDto.class))).thenAnswer(i -> i.getArguments()[1]);
+
+        mockMvc.perform(patch("/users/" + userId).contentType(MediaType.APPLICATION_JSON).content(jsonDto))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonDto));
+    }
+
+    @SneakyThrows
+    @Test
+    void delete_shouldReturnDataNotFoundException() {
         long userId = 1;
 
-        when(userService.getById(userId)).thenThrow(new DataNotFoundException("User not found"));
+        doThrow(new DataNotFoundException("User not found")).when(userService).delete(anyLong());
 
-        mockMvc.perform(get("/users/1"))
+        mockMvc.perform(delete("/users/" + userId))
                 .andExpect(status().isNotFound());
     }
 
+    @SneakyThrows
     @Test
-    void getById_shouldReturnUser() throws Exception {
-        long userId = 1;
-        UserDto userDto = userMapper.toDto(TestHelper.createUser(userId));
-
-        when(userService.getById(userId)).thenReturn(userDto);
-
-        mockMvc.perform(get("/users/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(userDto)));
-    }
-
-    @Test
-    void create_shouldCreateUser() throws Exception {
-        long userId = 1;
-        User user = TestHelper.createUser(userId);
-        UserDto dto = UserDto.builder()
-                .name(user.getName())
-                .email(user.getEmail())
-                .build();
-        String json = objectMapper.writeValueAsString(dto);
-
-        when(userService.add(dto)).thenReturn(userMapper.toDto(user));
-
-        mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().isCreated())
-                .andExpect(content().json(objectMapper.writeValueAsString(user)));
-    }
-
-    @Test
-    void update_shouldUpdateUser() throws Exception {
-        long userId = 1;
-        User user = TestHelper.createUser(userId);
-        UserDto dto = UserDto.builder()
-                .name(user.getName())
-                .email(user.getEmail())
-                .build();
-        String json = objectMapper.writeValueAsString(dto);
-
-        when(userService.update(userId, dto)).thenReturn(userMapper.toDto(user));
-
-        mockMvc.perform(patch("/users/" + userId).contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(user)));
-    }
-
-    @Test
-    void update_shouldReturnNotFound() throws Exception {
-        long userId = 1;
-        User user = TestHelper.createUser(userId);
-        UserDto dto = UserDto.builder()
-                .name(user.getName())
-                .email(user.getEmail())
-                .build();
-        String json = objectMapper.writeValueAsString(dto);
-
-        when(userService.update(userId, dto)).thenThrow(new DataNotFoundException("User not found"));
-
-        mockMvc.perform(patch("/users/" + userId).contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void delete_shouldReturnNotFound() throws Exception {
-        long userId = 1;
-
-        doThrow(new DataNotFoundException("User not found")).when(userService).delete(userId);
-
-        mockMvc.perform(delete("/users/" + userId)).andExpect(status().isNotFound());
-    }
-
-    @Test
-    void delete_shouldReturnDeletedUser() throws Exception {
+    void delete_shouldReturnStatusOk() {
         long userId = 1;
 
         mockMvc.perform(delete("/users/" + userId))

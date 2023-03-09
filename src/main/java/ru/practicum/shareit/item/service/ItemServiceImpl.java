@@ -131,13 +131,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private Item findById(long itemId) {
-        Item item = itemRepository.getById(itemId);
+        Optional<Item> item = itemRepository.findById(itemId);
 
-        if (item == null) {
+        if (item.isEmpty()) {
             throw new DataNotFoundException("Item not found");
         }
 
-        return item;
+        return item.get();
     }
 
     private boolean isOwner(Item item, long ownerId) {

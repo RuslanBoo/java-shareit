@@ -45,7 +45,7 @@ class UserControllerIntegrationTest {
                 .build();
         UserDto createUserDto2 = UserDto.builder()
                 .name("name2")
-                .email("duplicatedEmail@test.test")
+                .email("correctEmail@test.test")
                 .build();
         UserDto updateUserDto = UserDto.builder()
                 .name("name2")
@@ -55,12 +55,12 @@ class UserControllerIntegrationTest {
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createUserDto1)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isOk());
 
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createUserDto2)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isOk());
 
         mockMvc.perform(patch("/users/2")
                         .contentType(MediaType.APPLICATION_JSON)
