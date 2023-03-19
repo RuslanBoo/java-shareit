@@ -12,8 +12,6 @@ public class PaginationService {
             return null;
         }
 
-        System.out.println(from + " - " + size);
-
         if (from < 0 || size <= 0) {
             throw new BadRequestException("Invalid value of from or size param");
         }

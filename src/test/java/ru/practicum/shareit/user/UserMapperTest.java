@@ -55,6 +55,24 @@ class UserMapperTest {
     }
 
     @Test
-    void updateUser() {
+    void testUpdateUser_shouldReturnNonChangedUser() {
+        User user = Helper.createUser(1L);
+        userMapper.updateUser(null, user);
+
+        assertEquals(user, user);
+    }
+
+    @Test
+    void testUpdateUser_shouldReturnChangedUser() {
+        User user = Helper.createUser(1L);
+        UserDto userDto = UserDto.builder()
+                .name("new name")
+                .email("new email")
+                .build();
+
+        userMapper.updateUser(userDto, user);
+
+        assertEquals(user.getName(), userDto.getName());
+        assertEquals(user.getEmail(), userDto.getEmail());
     }
 }
