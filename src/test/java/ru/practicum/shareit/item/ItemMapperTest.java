@@ -27,7 +27,8 @@ class ItemMapperTest {
     void toDto_shouldReturnItemDto() {
         long itemId = 0L;
         long userId = 0L;
-        Item item = Helper.createItem(itemId, userId);
+        User owner = Helper.createUser(userId);
+        Item item = Helper.createItem(itemId, owner);
         ItemDto itemDto = ItemDto.builder()
                 .id(itemId)
                 .name("Test name")
@@ -49,7 +50,7 @@ class ItemMapperTest {
     void fromDto_shouldReturnItemDto() {
         long itemId = 0L;
         long userId = 0L;
-        Item item = Helper.createItem(itemId, userId);
+        Item item = Helper.createItem(itemId, null);
         ItemDto itemDto = ItemDto.builder()
                 .id(itemId)
                 .name("Test name")
@@ -69,7 +70,8 @@ class ItemMapperTest {
 
     @Test
     void updateItem_shouldReturnNonChangedItem() {
-        Item item = Helper.createItem(1L, 1L);
+        User owner = Helper.createUser(1L);
+        Item item = Helper.createItem(1L, owner);
         itemMapper.updateItem(null, item);
 
         assertEquals(item, item);

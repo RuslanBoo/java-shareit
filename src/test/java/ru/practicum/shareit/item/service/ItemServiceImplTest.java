@@ -80,7 +80,8 @@ class ItemServiceImplTest {
     void getById_shouldReturnItemDto() {
         long userId = 1L;
         long itemId = 1L;
-        Item item = Helper.createItem(itemId, userId);
+        User owner = Helper.createUser(userId);
+        Item item = Helper.createItem(itemId, owner);
         ItemDto itemDto = itemMapper.toDto(item);
         User user = Helper.createUser(userId);
         item.setOwner(user);
@@ -128,7 +129,8 @@ class ItemServiceImplTest {
     void search_shouldReturnList() {
         long userId = 1L;
         long itemId = 1L;
-        Item item = Helper.createItem(itemId, userId);
+        User owner = Helper.createUser(userId);
+        Item item = Helper.createItem(itemId, owner);
         ItemDto itemDto = itemMapper.toDto(item);
         User user = Helper.createUser(userId);
         item.setOwner(user);
@@ -142,7 +144,8 @@ class ItemServiceImplTest {
     void add_shouldReturnItemDto() {
         long userId = 1L;
         long itemId = 0L;
-        Item item = Helper.createItem(itemId, userId);
+        User owner = Helper.createUser(userId);
+        Item item = Helper.createItem(itemId, owner);
         ItemDto itemDto = itemMapper.toDto(item);
         User user = Helper.createUser(userId);
         item.setOwner(user);
@@ -157,7 +160,8 @@ class ItemServiceImplTest {
     void update_shouldThrowDataNotFoundException() {
         long userId = 1L;
         long itemId = 0L;
-        Item item = Helper.createItem(itemId, userId);
+        User owner = Helper.createUser(userId);
+        Item item = Helper.createItem(itemId, owner);
         ItemDto itemDto = itemMapper.toDto(item);
         User user = Helper.createUser(userId);
         item.setOwner(user);
@@ -171,7 +175,8 @@ class ItemServiceImplTest {
     void update_shouldThrowDataNotFoundException2() {
         long userId = 1L;
         long itemId = 0L;
-        Item item = Helper.createItem(itemId, userId);
+        User owner = Helper.createUser(userId);
+        Item item = Helper.createItem(itemId, owner);
         ItemDto itemDto = itemMapper.toDto(item);
         User user = Helper.createUser(userId);
 
@@ -184,7 +189,8 @@ class ItemServiceImplTest {
     void update_shouldReturnItemDto() {
         long userId = 1L;
         long itemId = 0L;
-        Item item = Helper.createItem(itemId, userId);
+        User owner = Helper.createUser(userId);
+        Item item = Helper.createItem(itemId, owner);
         User user = Helper.createUser(userId);
         item.setOwner(user);
         item.setComments(new ArrayList<>());
@@ -200,7 +206,8 @@ class ItemServiceImplTest {
     void delete_shouldReturnVoid() {
         long userId = 1L;
         long itemId = 0L;
-        Item item = Helper.createItem(itemId, userId);
+        User owner = Helper.createUser(userId);
+        Item item = Helper.createItem(itemId, owner);
         User user = Helper.createUser(userId);
         item.setOwner(user);
         item.setComments(new ArrayList<>());
@@ -217,7 +224,8 @@ class ItemServiceImplTest {
         long userId = 1L;
         long itemId = 0L;
 
-        Item item = Helper.createItem(itemId, userId);
+        User owner = Helper.createUser(userId);
+        Item item = Helper.createItem(itemId, owner);
         User user = Helper.createUser(userId);
         item.setOwner(user);
 
@@ -235,7 +243,8 @@ class ItemServiceImplTest {
         long userId = 1L;
         long itemId = 0L;
 
-        Item item = Helper.createItem(itemId, userId);
+        User owner = Helper.createUser(userId);
+        Item item = Helper.createItem(itemId, owner);
         User user = Helper.createUser(userId);
         item.setOwner(user);
 
@@ -253,7 +262,8 @@ class ItemServiceImplTest {
     void commentSave_shouldReturnCommentDto() {
         long userId = 1L;
         long itemId = 0L;
-        Item item = Helper.createItem(itemId, userId);
+        User owner = Helper.createUser(userId);
+        Item item = Helper.createItem(itemId, owner);
         User user = Helper.createUser(userId);
         item.setOwner(user);
         Comment comment = Helper.createComment(0L, item, user);

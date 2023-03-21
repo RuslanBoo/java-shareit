@@ -27,7 +27,8 @@ public class CommentMapperTest {
         long userId = 0L;
         long commentId = 0L;
         LocalDateTime date = LocalDateTime.now();
-        Item item = Helper.createItem(itemId, userId);
+        User owner = Helper.createUser(userId);
+        Item item = Helper.createItem(itemId, owner);
         User user = Helper.createUser(userId);
 
         Comment comment = Helper.createComment(0L, item, user);
@@ -49,7 +50,8 @@ public class CommentMapperTest {
         long userId = 0L;
         long commentId = 0L;
         LocalDateTime date = LocalDateTime.now();
-        Item item = Helper.createItem(itemId, userId);
+        User owner = Helper.createUser(userId);
+        Item item = Helper.createItem(itemId, owner);
         User user = Helper.createUser(userId);
 
         Comment comment = Helper.createComment(0L, item, user);
@@ -64,7 +66,8 @@ public class CommentMapperTest {
         long userId = 0L;
         long commentId = 0L;
         LocalDateTime date = LocalDateTime.now();
-        Item item = Helper.createItem(itemId, userId);
+        User owner = Helper.createUser(userId);
+        Item item = Helper.createItem(itemId, owner);
         User user = Helper.createUser(userId);
         user.setName(null);
 
@@ -85,7 +88,8 @@ public class CommentMapperTest {
         long userId = 0L;
         long commentId = 0L;
         LocalDateTime date = LocalDateTime.now();
-        Item item = Helper.createItem(itemId, userId);
+        User owner = Helper.createUser(userId);
+        Item item = Helper.createItem(itemId, owner);
         User user = Helper.createUser(userId);
 
         Comment comment = Comment.builder()

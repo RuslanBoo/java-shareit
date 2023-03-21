@@ -22,17 +22,18 @@ public class BookingController {
     @GetMapping
     public List<BookingDto> getAllByBooker(
             @RequestHeader(name = USER_ID) long bookerId,
-            @RequestParam(defaultValue = "ALL") String state,
+            @RequestParam(name = "state", defaultValue = "ALL") String state,
             @RequestParam(name = "from", required = false) Integer from,
             @RequestParam(name = "size", required = false) Integer size
     ) {
+        System.out.println(state);
         return bookingService.getAllByBooker(bookerId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getAllByOwner(
             @RequestHeader(name = USER_ID) long ownerId,
-            @RequestParam(defaultValue = "ALL") String state,
+            @RequestParam(name = "state", defaultValue = "ALL") String state,
             @RequestParam(name = "from", required = false) Integer from,
             @RequestParam(name = "size", required = false) Integer size
     ) {

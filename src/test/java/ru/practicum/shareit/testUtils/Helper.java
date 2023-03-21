@@ -21,8 +21,8 @@ import java.util.List;
 @Component
 public class Helper {
     private static final LocalDateTime CREATE = LocalDateTime.of(2022, 12, 10, 00, 00, 00);
-    private static final LocalDateTime START = LocalDateTime.of(2022, 12, 11, 00, 00, 00);
-    private static final LocalDateTime END = LocalDateTime.of(2022, 12, 12, 00, 00, 00);
+    private static final LocalDateTime START = LocalDateTime.of(2023, 4, 11, 00, 00, 00);
+    private static final LocalDateTime END = LocalDateTime.of(2023, 5, 12, 00, 00, 00);
 
     public static UserDto createUserDto(long id) {
         return UserDto.builder()
@@ -40,11 +40,12 @@ public class Helper {
                 .build();
     }
 
-    public static Item createItem(long itemId, long userId) {
+    public static Item createItem(long itemId, User user) {
         return Item.builder()
                 .id(itemId)
                 .name("Test name")
                 .description("Test description")
+                .owner(user)
                 .requestId(1L)
                 .comments(List.of())
                 .available(true)
@@ -83,7 +84,7 @@ public class Helper {
         return Booking.builder()
                 .id(id)
                 .item(item)
-                .status(BookingStatus.APPROVED)
+                .status(BookingStatus.WAITING)
                 .start(START)
                 .end(END)
                 .booker(user)
@@ -94,7 +95,7 @@ public class Helper {
         return BookingDto.builder()
                 .id(id)
                 .itemId(itemId)
-                .status(BookingStatus.APPROVED)
+                .status(BookingStatus.WAITING)
                 .start(START)
                 .end(END)
                 .booker(user)
