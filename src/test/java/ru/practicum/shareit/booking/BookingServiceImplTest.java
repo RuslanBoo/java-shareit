@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.enums.BookingPermission;
 import ru.practicum.shareit.booking.enums.BookingStatus;
@@ -19,17 +20,19 @@ import ru.practicum.shareit.error.model.DataNotFoundException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.pagination.PaginationService;
 import ru.practicum.shareit.testUtils.Helper;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,6 +53,9 @@ class BookingServiceImplTest {
 
     @Mock
     private BookingPermission bookingPermission;
+
+    @Mock
+    private PaginationService paginationService;
 
     @InjectMocks
     private BookingServiceImpl bookingService;
@@ -243,10 +249,93 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllByBooker() {
+    void getAllByBooker_shouldReturnDataNotFoundException() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> bookingService.getAllByBooker(1L, "ALL", 1, 10))
+                .isInstanceOf(DataNotFoundException.class);
     }
 
     @Test
-    void getAllByOwner() {
+    void getAllByBooker_shouldReturnBadRequestException() {
+        assertThatThrownBy(() -> bookingService.getAllByBooker(1L, "UNKOWN", 1, 10))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    @SneakyThrows
+    @Test
+    void getAllByBooker_shouldReturnEmptyList() {
+        User user = Helper.createUser(1L);
+        List<BookingDto> emptyList = new ArrayList<>();
+
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(paginationService.getPageable(anyInt(), anyInt())).thenReturn(PageRequest.of(1, 10));
+        when(bookingRepository.findAllByBookerIdOrderByStartDesc(
+                anyLong(), any(PageRequest.class))
+        ).thenReturn(List.of());
+        when(bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(
+                anyLong(), any(LocalDateTime.class), any(PageRequest.class))
+        ).thenReturn(List.of());
+        when(bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(
+                anyLong(), any(LocalDateTime.class), any(LocalDateTime.class), any(PageRequest.class))
+        ).thenReturn(List.of());
+        when(bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(
+                anyLong(), any(LocalDateTime.class), any(PageRequest.class))
+        ).thenReturn(List.of());
+        when(bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(
+                anyLong(), any(BookingStatus.class), any(PageRequest.class))
+        ).thenReturn(List.of());
+
+        assertEquals(bookingService.getAllByBooker(1L, "ALL", 1, 10), emptyList);
+        assertEquals(bookingService.getAllByBooker(1L, "PAST", 1, 10), emptyList);
+        assertEquals(bookingService.getAllByBooker(1L, "FUTURE", 1, 10), emptyList);
+        assertEquals(bookingService.getAllByBooker(1L, "CURRENT", 1, 10), emptyList);
+        assertEquals(bookingService.getAllByBooker(1L, "WAITING", 1, 10), emptyList);
+        assertEquals(bookingService.getAllByBooker(1L, "REJECTED", 1, 10), emptyList);
+    }
+
+    @Test
+    void getAllByOwner_shouldReturnDataNotFoundException() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> bookingService.getAllByOwner(1L, "ALL", 1, 10))
+                .isInstanceOf(DataNotFoundException.class);
+    }
+
+    @Test
+    void getAllByOwner_shouldReturnBadRequestException() {
+        assertThatThrownBy(() -> bookingService.getAllByOwner(1L, "UNKOWN", 1, 10))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    void getAllByOwner_shouldReturnEmptyList() {
+        User user = Helper.createUser(1L);
+        List<BookingDto> emptyList = new ArrayList<>();
+
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(paginationService.getPageable(anyInt(), anyInt())).thenReturn(PageRequest.of(1, 10));
+        when(bookingRepository.findAllByItemOwnerIdOrderByStartDesc(
+                anyLong(), any(PageRequest.class))
+        ).thenReturn(List.of());
+        when(bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(
+                anyLong(), any(LocalDateTime.class), any(PageRequest.class))
+        ).thenReturn(List.of());
+        when(bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(
+                anyLong(), any(LocalDateTime.class), any(LocalDateTime.class), any(PageRequest.class))
+        ).thenReturn(List.of());
+        when(bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(
+                anyLong(), any(LocalDateTime.class), any(PageRequest.class))
+        ).thenReturn(List.of());
+        when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(
+                anyLong(), any(BookingStatus.class), any(PageRequest.class))
+        ).thenReturn(List.of());
+
+        assertEquals(bookingService.getAllByOwner(1L, "ALL", 1, 10), emptyList);
+        assertEquals(bookingService.getAllByOwner(1L, "PAST", 1, 10), emptyList);
+        assertEquals(bookingService.getAllByOwner(1L, "FUTURE", 1, 10), emptyList);
+        assertEquals(bookingService.getAllByOwner(1L, "CURRENT", 1, 10), emptyList);
+        assertEquals(bookingService.getAllByOwner(1L, "WAITING", 1, 10), emptyList);
+        assertEquals(bookingService.getAllByOwner(1L, "REJECTED", 1, 10), emptyList);
     }
 }
