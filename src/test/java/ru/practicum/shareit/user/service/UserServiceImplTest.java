@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.practicum.shareit.error.model.ConflictException;
 import ru.practicum.shareit.error.model.DataNotFoundException;
 import ru.practicum.shareit.testUtils.Helper;
 import ru.practicum.shareit.user.UserMapper;
@@ -24,7 +23,8 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -97,17 +97,6 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testUpdate_shouldReturnConflictException() {
-        long userId = 0L;
-        User user = Helper.createUser(userId);
-        UserDto userDto = userMapper.toDto(user);
-
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
-
-        assertThatThrownBy(() -> userService.update(userId, userDto)).isInstanceOf(ConflictException.class);
-    }
-
-    @Test
     void testUpdate_shouldReturnDataNotFoundException() {
         long userId = 0L;
         User user = Helper.createUser(userId);
@@ -124,7 +113,6 @@ class UserServiceImplTest {
         User user = Helper.createUser(userId);
         UserDto userDto = userMapper.toDto(user);
 
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
 
