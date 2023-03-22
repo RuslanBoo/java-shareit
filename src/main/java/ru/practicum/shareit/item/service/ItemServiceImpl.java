@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.comment.CommentMapper;
 import ru.practicum.shareit.comment.CommentRepository;
@@ -27,15 +28,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    private final BookingRepository bookingRepository;
-
-    private final BookingMapper bookingMapper;
-    private final ItemRepository itemRepository;
-    private final ItemMapper itemMapper;
     private final UserServiceImpl userService;
-
+    private final ItemRepository itemRepository;
+    private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
-
+    private final ItemMapper itemMapper;
+    private final BookingMapper bookingMapper;
     private final CommentMapper commentMapper;
 
     @Override
@@ -101,7 +99,7 @@ public class ItemServiceImpl implements ItemService {
     public CommentDto commentSave(long itemId, long userId, CommentDto commentDto) {
         Optional<Item> item = itemRepository.findById(itemId);
         User user = userService.findById(userId);
-        List<Booking> bookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
+        List<Booking> bookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now(), null);
 
         if (item.isEmpty()) {
             throw new DataNotFoundException("Item not found");
@@ -134,13 +132,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private Item findById(long itemId) {
-        Item item = itemRepository.getById(itemId);
+        Optional<Item> item = itemRepository.findById(itemId);
 
-        if (item == null) {
+        if (item.isEmpty()) {
             throw new DataNotFoundException("Item not found");
         }
 
-        return item;
+        return item.get();
     }
 
     private boolean isOwner(Item item, long ownerId) {
@@ -176,13 +174,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private Booking getNextBooking(Item item) {
-        Optional<Booking> nextBooking = bookingRepository.findFirstByItemIdAndStartAfterOrderByStartAsc(item.getId(), LocalDateTime.now());
+        Optional<Booking> nextBooking = bookingRepository.findFirstByItemIdAndStatusNotAndStartAfterOrderByStartAsc(item.getId(), BookingStatus.REJECTED, LocalDateTime.now());
 
         return nextBooking.orElse(null);
     }
 
     private Booking getLastBooking(Item item) {
-        Optional<Booking> lastBooking = bookingRepository.findFirstByItemIdAndEndBeforeOrderByEndDesc(item.getId(), LocalDateTime.now());
+        Optional<Booking> lastBooking = bookingRepository.findFirstByItemIdAndStatusNotAndStartBeforeOrderByStartDesc(item.getId(), BookingStatus.REJECTED, LocalDateTime.now());
 
         return lastBooking.orElse(null);
     }

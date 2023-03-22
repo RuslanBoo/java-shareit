@@ -1,8 +1,10 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.pagination.PaginationService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -12,22 +14,29 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 public class BookingController {
     private static final String USER_ID = "X-Sharer-User-Id";
+
+    @Autowired
     private final BookingService bookingService;
+    private final PaginationService paginationService;
 
     @GetMapping
     public List<BookingDto> getAllByBooker(
             @RequestHeader(name = USER_ID) long bookerId,
-            @RequestParam(defaultValue = "ALL") String state
+            @RequestParam(name = "state", defaultValue = "ALL") String state,
+            @RequestParam(name = "from", required = false) Integer from,
+            @RequestParam(name = "size", required = false) Integer size
     ) {
-        return bookingService.getAllByBooker(bookerId, state);
+        return bookingService.getAllByBooker(bookerId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getAllByOwner(
             @RequestHeader(name = USER_ID) long ownerId,
-            @RequestParam(defaultValue = "ALL") String state
+            @RequestParam(name = "state", defaultValue = "ALL") String state,
+            @RequestParam(name = "from", required = false) Integer from,
+            @RequestParam(name = "size", required = false) Integer size
     ) {
-        return bookingService.getAllByOwner(ownerId, state);
+        return bookingService.getAllByOwner(ownerId, state, from, size);
     }
 
     @GetMapping("/{bookingId}")

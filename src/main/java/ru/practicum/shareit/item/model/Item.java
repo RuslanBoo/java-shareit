@@ -38,4 +38,6 @@ public class Item {
 
     @Transient
     private List<CommentDto> comments;
+
+    private Long requestId;
 }
