@@ -42,8 +42,6 @@ class ItemControllerTest {
     @InjectMocks
     private ItemController itemController;
 
-    private Helper helper = new Helper();
-
     @BeforeEach
     void setMockMvc() {
         mockMvc = MockMvcBuilders
@@ -75,7 +73,6 @@ class ItemControllerTest {
                 Helper.createItemDto(3L, 1L)
         );
 
-        List<UserDto> emptyList = new ArrayList<>();
         when(itemService.getByOwner(anyLong())).thenReturn(items);
 
         mockMvc.perform(get("/items").header("X-Sharer-User-Id", userId))
@@ -87,7 +84,6 @@ class ItemControllerTest {
     @Test
     void getById_shouldDataNotFoundException() {
         long userId = 1L;
-        ItemDto itemDto = Helper.createItemDto(1L, 1L);
 
         when(itemService.getById(anyLong(), anyLong())).thenThrow(DataNotFoundException.class);
 

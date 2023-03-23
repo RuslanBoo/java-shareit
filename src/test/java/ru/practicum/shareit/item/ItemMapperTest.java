@@ -1,9 +1,6 @@
 package ru.practicum.shareit.item;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.dto.ShortBookingDto;
 import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -17,11 +14,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@ExtendWith(MockitoExtension.class)
 class ItemMapperTest {
-    private Mock mock;
-
-    private ItemMapperImpl itemMapper = new ItemMapperImpl();
+    private final ItemMapperImpl itemMapper = new ItemMapperImpl();
 
     @Test
     void toDto_shouldReturnItemDto() {
@@ -49,7 +43,6 @@ class ItemMapperTest {
     @Test
     void fromDto_shouldReturnItemDto() {
         long itemId = 0L;
-        long userId = 0L;
         Item item = Helper.createItem(itemId, null);
         ItemDto itemDto = ItemDto.builder()
                 .id(itemId)

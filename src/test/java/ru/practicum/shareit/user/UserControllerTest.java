@@ -40,8 +40,6 @@ class UserControllerTest {
     @InjectMocks
     private UserController userController;
 
-    private Helper helper = new Helper();
-
     @BeforeEach
     void setMockMvc() {
         mockMvc = MockMvcBuilders
@@ -65,9 +63,9 @@ class UserControllerTest {
     @Test
     void getAll_shouldReturnListOfUsersDto() {
         List<UserDto> users = List.of(
-                helper.createUserDto(1),
-                helper.createUserDto(2),
-                helper.createUserDto(3)
+                Helper.createUserDto(1),
+                Helper.createUserDto(2),
+                Helper.createUserDto(3)
         );
 
         when(userService.getAll()).thenReturn(users);
@@ -97,7 +95,7 @@ class UserControllerTest {
     @Test
     void create_shouldReturnUserDto() {
         long userId = 1;
-        UserDto userDto = helper.createUserDto(userId);
+        UserDto userDto = Helper.createUserDto(userId);
         String jsonDto = objectMapper.writeValueAsString(userDto);
 
         when(userService.add(any(UserDto.class))).thenAnswer(i -> i.getArguments()[0]);
@@ -110,7 +108,6 @@ class UserControllerTest {
     @SneakyThrows
     @Test
     void create_shouldReturnBadRequestException() {
-        long userId = 1;
         UserDto userDto = UserDto.builder().build();
         String jsonDto = objectMapper.writeValueAsString(userDto);
 

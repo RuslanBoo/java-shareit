@@ -1,10 +1,8 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.pagination.PaginationService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -14,10 +12,7 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 public class BookingController {
     private static final String USER_ID = "X-Sharer-User-Id";
-
-    @Autowired
     private final BookingService bookingService;
-    private final PaginationService paginationService;
 
     @GetMapping
     public List<BookingDto> getAllByBooker(

@@ -1,9 +1,6 @@
 package ru.practicum.shareit.comment;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.item.model.Item;
@@ -15,11 +12,8 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@ExtendWith(MockitoExtension.class)
 public class CommentMapperTest {
-    private Mock mock;
-
-    private CommentMapperImpl commentMapper = new CommentMapperImpl();
+    private final CommentMapperImpl commentMapper = new CommentMapperImpl();
 
     @Test
     void toDto_shouldReturnCommentDto() {
@@ -48,8 +42,6 @@ public class CommentMapperTest {
     void toDto_shouldReturnCommentAuthorNameNull2() {
         long itemId = 0L;
         long userId = 0L;
-        long commentId = 0L;
-        LocalDateTime date = LocalDateTime.now();
         User owner = Helper.createUser(userId);
         Item item = Helper.createItem(itemId, owner);
         User user = Helper.createUser(userId);
@@ -64,8 +56,6 @@ public class CommentMapperTest {
     void toDto_shouldReturnCommentAuthorNameNull3() {
         long itemId = 0L;
         long userId = 0L;
-        long commentId = 0L;
-        LocalDateTime date = LocalDateTime.now();
         User owner = Helper.createUser(userId);
         Item item = Helper.createItem(itemId, owner);
         User user = Helper.createUser(userId);
@@ -84,13 +74,8 @@ public class CommentMapperTest {
 
     @Test
     void fromDto_shouldReturnComment() {
-        long itemId = 0L;
-        long userId = 0L;
         long commentId = 0L;
         LocalDateTime date = LocalDateTime.now();
-        User owner = Helper.createUser(userId);
-        Item item = Helper.createItem(itemId, owner);
-        User user = Helper.createUser(userId);
 
         Comment comment = Comment.builder()
                 .id(commentId)

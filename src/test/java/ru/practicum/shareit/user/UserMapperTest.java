@@ -1,9 +1,6 @@
 package ru.practicum.shareit.user;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.testUtils.Helper;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
@@ -11,12 +8,8 @@ import ru.practicum.shareit.user.model.User;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@ExtendWith(MockitoExtension.class)
 class UserMapperTest {
-
-    private Mock mock;
-
-    private UserMapperImpl userMapper = new UserMapperImpl();
+    private final UserMapperImpl userMapper = new UserMapperImpl();
 
     @Test
     void testToDto_shouldReturnUserDto() {

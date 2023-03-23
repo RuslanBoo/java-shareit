@@ -1,9 +1,6 @@
 package ru.practicum.shareit.request;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.testUtils.Helper;
@@ -14,11 +11,8 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@ExtendWith(MockitoExtension.class)
 class ItemRequestMapperImplTest {
-    private Mock mock;
-
-    private ItemRequestMapperImpl itemRequestMapper = new ItemRequestMapperImpl();
+    private final ItemRequestMapperImpl itemRequestMapper = new ItemRequestMapperImpl();
 
     @Test
     void toDto_shouldReturnItemRequestDto() {
@@ -46,9 +40,7 @@ class ItemRequestMapperImplTest {
     @Test
     void fromDto_shouldReturnItemRequestDto() {
         long itemRequestId = 0L;
-        long userId = 0L;
         LocalDateTime date = LocalDateTime.now();
-        User user = Helper.createUser(userId);
         ItemRequest itemRequest = Helper.createItemRequest(itemRequestId, null);
         itemRequest.setCreated(date);
 

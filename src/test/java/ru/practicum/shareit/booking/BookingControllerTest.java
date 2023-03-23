@@ -39,8 +39,6 @@ class BookingControllerTest {
     @InjectMocks
     private BookingController bookingController;
 
-    private Helper helper = new Helper();
-
     @BeforeEach
     void setMockMvc() {
         mockMvc = MockMvcBuilders
@@ -92,7 +90,6 @@ class BookingControllerTest {
     @Test
     void getAllByBooker_shouldReturnBadRequestException() {
         long userId = 1L;
-        List<BookingDto> emptyList = new ArrayList<>();
         when(bookingService.getAllByBooker(anyLong(), anyString(), anyInt(), anyInt())).thenThrow(new BadRequestException("Unknown state: UNSUPPORTED_STATUS"));
 
         mockMvc.perform(get("/bookings")
@@ -108,7 +105,6 @@ class BookingControllerTest {
     @Test
     void getAllByBooker_shouldReturnDataNotFoundException() {
         long userId = 1L;
-        List<BookingDto> emptyList = new ArrayList<>();
         when(bookingService.getAllByBooker(anyLong(), anyString(), anyInt(), anyInt())).thenThrow(new DataNotFoundException("User not found"));
 
         mockMvc.perform(get("/bookings")
@@ -163,7 +159,6 @@ class BookingControllerTest {
     @Test
     void getAllByOwner_shouldReturnBadRequestException() {
         long userId = 1L;
-        List<BookingDto> emptyList = new ArrayList<>();
         when(bookingService.getAllByOwner(anyLong(), anyString(), anyInt(), anyInt())).thenThrow(new BadRequestException("Unknown state: UNSUPPORTED_STATUS"));
 
         mockMvc.perform(get("/bookings/owner")
@@ -179,7 +174,6 @@ class BookingControllerTest {
     @Test
     void getAllByOwner_shouldReturnDataNotFoundException() {
         long userId = 1L;
-        List<BookingDto> emptyList = new ArrayList<>();
         when(bookingService.getAllByOwner(anyLong(), anyString(), anyInt(), anyInt())).thenThrow(new DataNotFoundException("User not found"));
 
         mockMvc.perform(get("/bookings/owner")

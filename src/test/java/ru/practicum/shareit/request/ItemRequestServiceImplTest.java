@@ -30,16 +30,11 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ItemRequestServiceImplTest {
-    private Mock mock;
-
     @Mock
     private ItemRequestRepository itemRequestRepository;
 
     @Mock
     private ItemRepository itemRepository;
-
-    @Mock
-    private ItemMapper itemMapper;
 
     @Mock
     private UserServiceImpl userService;
@@ -49,6 +44,9 @@ class ItemRequestServiceImplTest {
 
     @InjectMocks
     private ItemRequestServiceImpl itemRequestService;
+
+    @Spy
+    private ItemMapper itemMapper = Mappers.getMapper(ItemMapper.class);
 
     @Spy
     private ItemRequestMapper itemRequestMapper = Mappers.getMapper(ItemRequestMapper.class);
@@ -100,7 +98,6 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getAllByRequestorId_shouldReturnListOfItemRequestDto() {
-        long itemRequestId = 1L;
         long userId = 1L;
         User user = Helper.createUser(userId);
         List<ItemRequest> list = List.of(
@@ -135,7 +132,6 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getAll_shouldReturnListOfItemRequestDto() {
-        long itemRequestId = 1L;
         long userId = 1L;
         User user = Helper.createUser(userId);
         List<ItemRequest> list = List.of(

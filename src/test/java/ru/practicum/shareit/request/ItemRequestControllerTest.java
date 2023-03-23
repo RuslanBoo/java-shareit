@@ -38,8 +38,6 @@ class ItemRequestControllerTest {
     @InjectMocks
     private ItemRequestController itemRequestController;
 
-    private Helper helper = new Helper();
-
     @BeforeEach
     void setMockMvc() {
         mockMvc = MockMvcBuilders

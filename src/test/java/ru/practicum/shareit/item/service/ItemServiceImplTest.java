@@ -39,8 +39,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ItemServiceImplTest {
-    private Mock mock;
-
     @Mock
     private ItemRepository itemRepository;
 
@@ -109,7 +107,6 @@ class ItemServiceImplTest {
     @Test
     void getByOwner_shouldReturnEmptyList() {
         long userId = 1L;
-        long itemId = 1L;
 
         when(itemRepository.findAll()).thenReturn(List.of());
 
@@ -181,7 +178,6 @@ class ItemServiceImplTest {
         User owner = Helper.createUser(userId);
         Item item = Helper.createItem(itemId, owner);
         ItemDto itemDto = itemMapper.toDto(item);
-        User user = Helper.createUser(userId);
 
         assertThatThrownBy(
                 () -> itemService.update(itemId, itemDto, 1)
@@ -214,7 +210,6 @@ class ItemServiceImplTest {
         User user = Helper.createUser(userId);
         item.setOwner(user);
         item.setComments(new ArrayList<>());
-        ItemDto itemDto = itemMapper.toDto(item);
 
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
 

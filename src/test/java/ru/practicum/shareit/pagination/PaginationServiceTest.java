@@ -1,17 +1,13 @@
 package ru.practicum.shareit.pagination;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.error.model.BadRequestException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
 class PaginationServiceTest {
-
-    PaginationService paginationService = new PaginationService();
+    private final PaginationService paginationService = new PaginationService();
 
     @Test
     void getPageable_shouldReturnNull() {
@@ -28,7 +24,7 @@ class PaginationServiceTest {
 
     @Test
     void getPageable_shouldReturnPageRequest() {
-        int from = 1;
+        int from = 20;
         int size = 10;
         int pageNumber = from / size;
 
