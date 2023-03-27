@@ -7,10 +7,10 @@ import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
-@EqualsAndHashCode
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,7 +20,6 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "item_id")
-    @EqualsAndHashCode.Exclude
     private long id;
     private String name;
     private String description;
@@ -40,4 +39,17 @@ public class Item {
     private List<CommentDto> comments;
 
     private Long requestId;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return id == item.id && Objects.equals(name, item.name) && Objects.equals(description, item.description) && Objects.equals(available, item.available) && Objects.equals(owner, item.owner) && Objects.equals(lastBooking, item.lastBooking) && Objects.equals(nextBooking, item.nextBooking) && Objects.equals(comments, item.comments) && Objects.equals(requestId, item.requestId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description, available, owner, lastBooking, nextBooking, comments, requestId);
+    }
 }
