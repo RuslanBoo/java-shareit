@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -13,14 +14,23 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class ItemRequestMapperImplTest {
     private final ItemRequestMapperImpl itemRequestMapper = new ItemRequestMapperImpl();
+    private long itemRequestId = 0L;
+    private long userId = 0L;
+    private LocalDateTime date = LocalDateTime.now();
+    private User user = Helper.createUser(userId);
+    private ItemRequest itemRequest = Helper.createItemRequest(itemRequestId, user);
+
+    @BeforeEach
+    void setUp() {
+        itemRequestId = 0L;
+        userId = 0L;
+        date = LocalDateTime.now();
+        user = Helper.createUser(userId);
+        itemRequest = Helper.createItemRequest(itemRequestId, user);
+    }
 
     @Test
     void toDto_shouldReturnItemRequestDto() {
-        long itemRequestId = 0L;
-        long userId = 0L;
-        LocalDateTime date = LocalDateTime.now();
-        User user = Helper.createUser(userId);
-        ItemRequest itemRequest = Helper.createItemRequest(itemRequestId, user);
         itemRequest.setCreated(date);
 
         ItemRequestDto itemRequestDto = ItemRequestDto.builder()
@@ -39,8 +49,6 @@ class ItemRequestMapperImplTest {
 
     @Test
     void fromDto_shouldReturnItemRequestDto() {
-        long itemRequestId = 0L;
-        LocalDateTime date = LocalDateTime.now();
         ItemRequest itemRequest = Helper.createItemRequest(itemRequestId, null);
         itemRequest.setCreated(date);
 

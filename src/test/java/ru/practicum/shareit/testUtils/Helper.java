@@ -20,9 +20,10 @@ import java.util.List;
 
 @Component
 public class Helper {
-    private static final LocalDateTime CREATE = LocalDateTime.of(2022, 12, 10, 00, 00, 00);
-    private static final LocalDateTime START = LocalDateTime.of(2023, 4, 11, 00, 00, 00);
-    private static final LocalDateTime END = LocalDateTime.of(2023, 5, 12, 00, 00, 00);
+    public static final String HEADER_USER_ID = "X-Sharer-User-Id";
+    private static final LocalDateTime CREATE = LocalDateTime.of(2022, 12, 10, 0, 0, 0);
+    private static final LocalDateTime START = LocalDateTime.of(2023, 4, 11, 0, 0, 0);
+    private static final LocalDateTime END = LocalDateTime.of(2023, 5, 12, 0, 0, 0);
 
     public static UserDto createUserDto(long id) {
         return UserDto.builder()

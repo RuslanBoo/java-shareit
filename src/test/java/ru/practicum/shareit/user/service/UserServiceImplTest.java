@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -38,10 +39,24 @@ class UserServiceImplTest {
     @Spy
     private UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
+    private long userId;
+    private User user;
+    private UserDto userDto;
+    private List<User> emptyList;
+    private List<UserDto> emptyDtoList;
+
+
+    @BeforeEach
+    void setUp() {
+        userId = 0L;
+        user = Helper.createUser(userId);
+        userDto = userMapper.toDto(user);
+        emptyList = new ArrayList<>();
+        emptyDtoList = new ArrayList<>();
+    }
+
     @Test
     void testGetById_shouldReturnDataNotFoundException() {
-        long userId = 1L;
-
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(
@@ -51,10 +66,6 @@ class UserServiceImplTest {
 
     @Test
     void testGetById_shouldReturnUserDto() {
-        long userId = 1L;
-        User user = Helper.createUser(userId);
-        UserDto userDto = userMapper.toDto(user);
-
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
         assertThat(userService.getById(userId)).isEqualTo(userDto);
@@ -62,8 +73,6 @@ class UserServiceImplTest {
 
     @Test
     void testGetAll_shouldReturnEmptyList() {
-        List<User> emptyList = new ArrayList<>();
-        List<UserDto> emptyDtoList = new ArrayList<>();
         when(userRepository.findAll()).thenReturn(emptyList);
 
         assertThat(userService.getAll()).isEqualTo(emptyDtoList);
@@ -85,10 +94,6 @@ class UserServiceImplTest {
 
     @Test
     void testAdd_shouldReturnUserDto() {
-        long userId = 0L;
-        User user = Helper.createUser(userId);
-        UserDto userDto = userMapper.toDto(user);
-
         when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
 
         assertThat(userService.add(userDto)).isEqualTo(userDto);
@@ -96,10 +101,6 @@ class UserServiceImplTest {
 
     @Test
     void testUpdate_shouldReturnDataNotFoundException() {
-        long userId = 0L;
-        User user = Helper.createUser(userId);
-        UserDto userDto = userMapper.toDto(user);
-
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.update(userId, userDto)).isInstanceOf(DataNotFoundException.class);
@@ -107,10 +108,6 @@ class UserServiceImplTest {
 
     @Test
     void testUpdate_shouldUserDto() {
-        long userId = 0L;
-        User user = Helper.createUser(userId);
-        UserDto userDto = userMapper.toDto(user);
-
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
 
@@ -119,8 +116,6 @@ class UserServiceImplTest {
 
     @Test
     void testDelete_shouldReturnDataNotFoundException() {
-        long userId = 0L;
-
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(DataNotFoundException.class, () -> userService.delete(userId));
@@ -128,9 +123,6 @@ class UserServiceImplTest {
 
     @Test
     void testDelete_shouldReturnVoid() {
-        long userId = 0L;
-        User user = Helper.createUser(userId);
-
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
         userService.delete(userId);
@@ -139,8 +131,6 @@ class UserServiceImplTest {
 
     @Test
     void testFindById_shouldReturnDataNotFoundException() {
-        long userId = 0L;
-
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.findById(userId)).isInstanceOf(DataNotFoundException.class);
@@ -148,10 +138,6 @@ class UserServiceImplTest {
 
     @Test
     void testFindById_shouldReturnUser() {
-        long userId = 0L;
-        User user = Helper.createUser(userId);
-        UserDto userDto = userMapper.toDto(user);
-
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
         assertThat(userService.findById(userId)).isEqualTo(user);

@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -51,15 +52,40 @@ class ItemRequestServiceImplTest {
     @Spy
     private ItemRequestMapper itemRequestMapper = Mappers.getMapper(ItemRequestMapper.class);
 
-    @Test
-    void add_shouldReturnDataNotFoundException() {
-        long itemRequestId = 1L;
-        ItemRequestDto itemRequestDto = ItemRequestDto.builder()
+    private long itemRequestId;
+    private long userId;
+    private User user;
+    private List<ItemRequest> list;
+    private List<ItemRequestDto> listDto;
+    private ItemRequestDto itemRequestDto;
+
+    @BeforeEach
+    void setUp() {
+        itemRequestId = 1L;
+        userId = 1L;
+        user = Helper.createUser(userId);
+
+        itemRequestDto = ItemRequestDto.builder()
                 .id(itemRequestId)
                 .created(LocalDateTime.now())
                 .description("test")
                 .build();
 
+        list = List.of(
+                Helper.createItemRequest(1L, user),
+                Helper.createItemRequest(2L, user),
+                Helper.createItemRequest(3L, user)
+        );
+
+        listDto = List.of(
+                Helper.createItemRequestDto(1L, user),
+                Helper.createItemRequestDto(2L, user),
+                Helper.createItemRequestDto(3L, user)
+        );
+    }
+
+    @Test
+    void add_shouldReturnDataNotFoundException() {
         when(userService.findById(anyLong())).thenThrow(DataNotFoundException.class);
 
         assertThatThrownBy(() -> itemRequestService.add(itemRequestDto, 1L))
@@ -68,16 +94,6 @@ class ItemRequestServiceImplTest {
 
     @Test
     void add_shouldReturnItemRequestDto() {
-        long itemRequestId = 1L;
-        long userId = 1L;
-        User user = Helper.createUser(userId);
-        ItemRequestDto itemRequestDto = ItemRequestDto.builder()
-                .id(itemRequestId)
-                .created(LocalDateTime.now())
-                .description("test")
-                .build();
-
-
         when(userService.findById(anyLong())).thenReturn(user);
         when(itemRequestRepository.save(any(ItemRequest.class))).thenAnswer(i -> i.getArguments()[0]);
         ItemRequestDto result = itemRequestService.add(itemRequestDto, 1L);
@@ -88,30 +104,14 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getAllByRequestorId_shouldReturnDataNotFoundException() {
-        long requestorId = 1L;
-
         when(userService.findById(anyLong())).thenThrow(DataNotFoundException.class);
 
-        assertThatThrownBy(() -> itemRequestService.getAllByRequestorId(requestorId, 1, 1))
+        assertThatThrownBy(() -> itemRequestService.getAllByRequestorId(1L, 1, 1))
                 .isInstanceOf(DataNotFoundException.class);
     }
 
     @Test
     void getAllByRequestorId_shouldReturnListOfItemRequestDto() {
-        long userId = 1L;
-        User user = Helper.createUser(userId);
-        List<ItemRequest> list = List.of(
-                Helper.createItemRequest(1L, user),
-                Helper.createItemRequest(2L, user),
-                Helper.createItemRequest(3L, user)
-        );
-
-        List<ItemRequestDto> listDto = List.of(
-                Helper.createItemRequestDto(1L, user),
-                Helper.createItemRequestDto(2L, user),
-                Helper.createItemRequestDto(3L, user)
-        );
-
         when(userService.findById(anyLong())).thenReturn(user);
         when(paginationService.getPageable(anyInt(), anyInt())).thenReturn(PageRequest.of(1, 10));
         when(itemRepository.findAllByRequestId(anyLong())).thenReturn(List.of());
@@ -122,8 +122,6 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getAll_shouldReturnDataNotFoundException() {
-        long userId = 1L;
-
         when(userService.findById(anyLong())).thenThrow(DataNotFoundException.class);
 
         assertThatThrownBy(() -> itemRequestService.getAll(userId, 1, 1))
@@ -132,20 +130,6 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getAll_shouldReturnListOfItemRequestDto() {
-        long userId = 1L;
-        User user = Helper.createUser(userId);
-        List<ItemRequest> list = List.of(
-                Helper.createItemRequest(1L, user),
-                Helper.createItemRequest(2L, user),
-                Helper.createItemRequest(3L, user)
-        );
-
-        List<ItemRequestDto> listDto = List.of(
-                Helper.createItemRequestDto(1L, user),
-                Helper.createItemRequestDto(2L, user),
-                Helper.createItemRequestDto(3L, user)
-        );
-
         when(userService.findById(anyLong())).thenReturn(user);
         when(paginationService.getPageable(anyInt(), anyInt())).thenReturn(PageRequest.of(1, 10));
         when(itemRepository.findAllByRequestId(anyLong())).thenReturn(List.of());
@@ -156,9 +140,6 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getById_shouldReturnDataNotFoundException() {
-        long userId = 1L;
-        long itemRequestId = 1L;
-
         when(itemRequestRepository.findById(anyLong())).thenThrow(DataNotFoundException.class);
 
         assertThatThrownBy(() -> itemRequestService.getById(itemRequestId, userId))
@@ -167,9 +148,6 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getById_shouldReturnItemRequestDto() {
-        long userId = 1L;
-        long itemRequestId = 1L;
-        User user = Helper.createUser(userId);
         ItemRequest itemRequest = Helper.createItemRequest(1L, user);
         ItemRequestDto itemRequestDto = ItemRequestDto.builder()
                 .id(itemRequest.getId())

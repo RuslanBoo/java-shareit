@@ -40,18 +40,34 @@ class UserControllerTest {
     @InjectMocks
     private UserController userController;
 
+    private long userId;
+    private List<UserDto> emptyList;
+    private List<UserDto> users;
+    private UserDto userDto;
+    private String jsonDto;
+
+    @SneakyThrows
     @BeforeEach
     void setMockMvc() {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(userController)
                 .setControllerAdvice(ErrorHandler.class)
                 .build();
+
+        userId = 1;
+        userDto = Helper.createUserDto(userId);
+        emptyList = new ArrayList<>();
+        users = List.of(
+                Helper.createUserDto(1),
+                Helper.createUserDto(2),
+                Helper.createUserDto(3)
+        );
+        jsonDto = objectMapper.writeValueAsString(userDto);
     }
 
     @SneakyThrows
     @Test
     void getAll_shouldReturnEmptyList() {
-        List<UserDto> emptyList = new ArrayList<>();
         when(userService.getAll()).thenReturn(emptyList);
 
         mockMvc.perform(get("/users"))
@@ -62,12 +78,6 @@ class UserControllerTest {
     @SneakyThrows
     @Test
     void getAll_shouldReturnListOfUsersDto() {
-        List<UserDto> users = List.of(
-                Helper.createUserDto(1),
-                Helper.createUserDto(2),
-                Helper.createUserDto(3)
-        );
-
         when(userService.getAll()).thenReturn(users);
 
         mockMvc.perform(get("/users"))
@@ -94,10 +104,6 @@ class UserControllerTest {
     @SneakyThrows
     @Test
     void create_shouldReturnUserDto() {
-        long userId = 1;
-        UserDto userDto = Helper.createUserDto(userId);
-        String jsonDto = objectMapper.writeValueAsString(userDto);
-
         when(userService.add(any(UserDto.class))).thenAnswer(i -> i.getArguments()[0]);
 
         mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(jsonDto))
@@ -118,10 +124,6 @@ class UserControllerTest {
     @SneakyThrows
     @Test
     void update_shouldReturnDataNotFoundException() {
-        long userId = 1;
-        UserDto userDto = UserDto.builder().build();
-        String jsonDto = objectMapper.writeValueAsString(userDto);
-
         when(userService.update(anyLong(), any(UserDto.class))).thenThrow(new DataNotFoundException("User not found"));
 
         mockMvc.perform(patch("/users/" + userId).contentType(MediaType.APPLICATION_JSON).content(jsonDto))
@@ -132,10 +134,6 @@ class UserControllerTest {
     @SneakyThrows
     @Test
     void update_shouldReturnUserDto() {
-        long userId = 1;
-        UserDto userDto = UserDto.builder().build();
-        String jsonDto = objectMapper.writeValueAsString(userDto);
-
         when(userService.update(anyLong(), any(UserDto.class))).thenAnswer(i -> i.getArguments()[1]);
 
         mockMvc.perform(patch("/users/" + userId).contentType(MediaType.APPLICATION_JSON).content(jsonDto))
@@ -146,8 +144,6 @@ class UserControllerTest {
     @SneakyThrows
     @Test
     void delete_shouldReturnDataNotFoundException() {
-        long userId = 1;
-
         doThrow(new DataNotFoundException("User not found")).when(userService).delete(anyLong());
 
         mockMvc.perform(delete("/users/" + userId))
@@ -157,8 +153,6 @@ class UserControllerTest {
     @SneakyThrows
     @Test
     void delete_shouldReturnStatusOk() {
-        long userId = 1;
-
         mockMvc.perform(delete("/users/" + userId))
                 .andExpect(status().isOk());
     }

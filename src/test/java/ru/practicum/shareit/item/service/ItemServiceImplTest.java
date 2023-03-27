@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -63,11 +64,25 @@ class ItemServiceImplTest {
     @Spy
     private CommentMapper commentMapper = Mappers.getMapper(CommentMapper.class);
 
+    private long userId;
+    private long itemId;
+    private User owner;
+    private Item item;
+    private ItemDto itemDto;
+    private User user;
+
+    @BeforeEach
+    void setUp() {
+        userId = 0L;
+        itemId = 0L;
+        owner = Helper.createUser(userId);
+        item = Helper.createItem(itemId, owner);
+        itemDto = itemMapper.toDto(item);
+        user = Helper.createUser(userId);
+    }
+
     @Test
     void getById_shouldThrowDataNotFoundException() {
-        long userId = 1L;
-        long itemId = 1L;
-
         when(itemRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(
@@ -77,12 +92,6 @@ class ItemServiceImplTest {
 
     @Test
     void getById_shouldReturnItemDto() {
-        long userId = 1L;
-        long itemId = 1L;
-        User owner = Helper.createUser(userId);
-        Item item = Helper.createItem(itemId, owner);
-        ItemDto itemDto = itemMapper.toDto(item);
-        User user = Helper.createUser(userId);
         item.setOwner(user);
 
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
@@ -106,8 +115,6 @@ class ItemServiceImplTest {
 
     @Test
     void getByOwner_shouldReturnEmptyList() {
-        long userId = 1L;
-
         when(itemRepository.findAll()).thenReturn(List.of());
 
         assertEquals(itemService.getByOwner(userId), List.of());
@@ -127,12 +134,6 @@ class ItemServiceImplTest {
 
     @Test
     void search_shouldReturnList() {
-        long userId = 1L;
-        long itemId = 1L;
-        User owner = Helper.createUser(userId);
-        Item item = Helper.createItem(itemId, owner);
-        ItemDto itemDto = itemMapper.toDto(item);
-        User user = Helper.createUser(userId);
         item.setOwner(user);
 
         when(itemRepository.findAllByText(anyString())).thenReturn(List.of(item));
@@ -142,12 +143,6 @@ class ItemServiceImplTest {
 
     @Test
     void add_shouldReturnItemDto() {
-        long userId = 1L;
-        long itemId = 0L;
-        User owner = Helper.createUser(userId);
-        Item item = Helper.createItem(itemId, owner);
-        ItemDto itemDto = itemMapper.toDto(item);
-        User user = Helper.createUser(userId);
         item.setOwner(user);
 
         when(userService.findById(userId)).thenReturn(user);
@@ -158,12 +153,6 @@ class ItemServiceImplTest {
 
     @Test
     void update_shouldThrowDataNotFoundException() {
-        long userId = 1L;
-        long itemId = 0L;
-        User owner = Helper.createUser(userId);
-        Item item = Helper.createItem(itemId, owner);
-        ItemDto itemDto = itemMapper.toDto(item);
-        User user = Helper.createUser(userId);
         item.setOwner(user);
 
         assertThatThrownBy(
@@ -173,12 +162,6 @@ class ItemServiceImplTest {
 
     @Test
     void update_shouldThrowDataNotFoundException2() {
-        long userId = 1L;
-        long itemId = 0L;
-        User owner = Helper.createUser(userId);
-        Item item = Helper.createItem(itemId, owner);
-        ItemDto itemDto = itemMapper.toDto(item);
-
         assertThatThrownBy(
                 () -> itemService.update(itemId, itemDto, 1)
         ).isInstanceOf(DataNotFoundException.class);
@@ -186,11 +169,6 @@ class ItemServiceImplTest {
 
     @Test
     void update_shouldReturnItemDto() {
-        long userId = 1L;
-        long itemId = 0L;
-        User owner = Helper.createUser(userId);
-        Item item = Helper.createItem(itemId, owner);
-        User user = Helper.createUser(userId);
         item.setOwner(user);
         item.setComments(new ArrayList<>());
         ItemDto itemDto = itemMapper.toDto(item);
@@ -203,11 +181,6 @@ class ItemServiceImplTest {
 
     @Test
     void delete_shouldReturnVoid() {
-        long userId = 1L;
-        long itemId = 0L;
-        User owner = Helper.createUser(userId);
-        Item item = Helper.createItem(itemId, owner);
-        User user = Helper.createUser(userId);
         item.setOwner(user);
         item.setComments(new ArrayList<>());
 
@@ -219,18 +192,12 @@ class ItemServiceImplTest {
 
     @Test
     void commentSave_shouldThrowDataNotFoundException() {
-        long userId = 1L;
-        long itemId = 0L;
-
-        User owner = Helper.createUser(userId);
-        Item item = Helper.createItem(itemId, owner);
-        User user = Helper.createUser(userId);
         item.setOwner(user);
-
         Comment comment = Helper.createComment(1L, item, user);
         CommentDto commentDto = commentMapper.toDto(comment);
 
         when(itemRepository.findById(anyLong())).thenReturn(Optional.empty());
+
         assertThatThrownBy(
                 () -> itemService.commentSave(itemId, userId, commentDto)
         ).isInstanceOf(DataNotFoundException.class);
@@ -238,19 +205,13 @@ class ItemServiceImplTest {
 
     @Test
     void commentSave_shouldThrowBadRequestException() {
-        long userId = 1L;
-        long itemId = 0L;
-
-        User owner = Helper.createUser(userId);
-        Item item = Helper.createItem(itemId, owner);
-        User user = Helper.createUser(userId);
         item.setOwner(user);
-
         Comment comment = Helper.createComment(1L, item, user);
         CommentDto commentDto = commentMapper.toDto(comment);
 
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
         when(bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(anyLong(), any(LocalDateTime.class), any())).thenReturn(List.of());
+
         assertThatThrownBy(
                 () -> itemService.commentSave(itemId, userId, commentDto)
         ).isInstanceOf(BadRequestException.class);
@@ -258,12 +219,6 @@ class ItemServiceImplTest {
 
     @Test
     void commentSave_shouldReturnCommentDto() {
-        long userId = 1L;
-        long itemId = 0L;
-        User owner = Helper.createUser(userId);
-        Item item = Helper.createItem(itemId, owner);
-        User user = Helper.createUser(userId);
-        item.setOwner(user);
         Comment comment = Helper.createComment(0L, item, user);
         CommentDto commentDto = commentMapper.toDto(comment);
         Booking booking = Helper.createBokking(0L, item, user);

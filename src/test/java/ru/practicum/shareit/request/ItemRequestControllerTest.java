@@ -38,24 +38,32 @@ class ItemRequestControllerTest {
     @InjectMocks
     private ItemRequestController itemRequestController;
 
+    private long userId;
+    long requestId;
+    private User user;
+    private List<ItemRequestDto> emptyList;
+    private ItemRequestDto itemRequestDto;
+
     @BeforeEach
     void setMockMvc() {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(itemRequestController)
                 .setControllerAdvice(ErrorHandler.class)
                 .build();
+
+        userId = 1L;
+        user = Helper.createUser(1L);
+        itemRequestDto = Helper.createItemRequestDto(1L, user);
+        emptyList = new ArrayList<>();
     }
 
     @SneakyThrows
     @Test
     void getAllByRequestorId_shouldReturnEmptyList() {
-        long userId = 1L;
-        List<ItemRequestDto> emptyList = new ArrayList<>();
-
         when(itemRequestService.getAllByRequestorId(anyLong(), anyInt(), anyInt())).thenReturn(emptyList);
 
         mockMvc.perform(get("/requests")
-                        .header("X-Sharer-User-Id", userId)
+                        .header(Helper.HEADER_USER_ID, userId)
                         .param("from", "1")
                         .param("size", "1"))
                 .andExpect(status().isOk())
@@ -65,14 +73,9 @@ class ItemRequestControllerTest {
     @SneakyThrows
     @Test
     void getById_shouldReturnItemRequestDto() {
-        long userId = 1L;
-        long requestId = 1L;
-        User user = Helper.createUser(1L);
-        ItemRequestDto itemRequestDto = Helper.createItemRequestDto(1L, user);
-
         when(itemRequestService.getById(anyLong(), anyLong())).thenReturn(itemRequestDto);
 
-        mockMvc.perform(get("/requests/{requestId}", requestId).header("X-Sharer-User-Id", userId))
+        mockMvc.perform(get("/requests/{requestId}", requestId).header(Helper.HEADER_USER_ID, userId))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(itemRequestDto)));
     }
@@ -80,13 +83,10 @@ class ItemRequestControllerTest {
     @SneakyThrows
     @Test
     void getAll_shouldReturnEmptyList() {
-        long userId = 1L;
-        List<ItemRequestDto> emptyList = new ArrayList<>();
-
         when(itemRequestService.getAll(anyLong(), anyInt(), anyInt())).thenReturn(emptyList);
 
         mockMvc.perform(get("/requests/all")
-                        .header("X-Sharer-User-Id", userId)
+                        .header(Helper.HEADER_USER_ID, userId)
                         .param("from", "1")
                         .param("size", "1"))
                 .andExpect(status().isOk())
@@ -96,16 +96,12 @@ class ItemRequestControllerTest {
     @SneakyThrows
     @Test
     void add_shouldReturnItemRequestDto() {
-        long userId = 1L;
-        long requestId = 0L;
-        User user = Helper.createUser(1L);
-        ItemRequestDto itemRequestDto = Helper.createItemRequestDto(requestId, user);
         String json = objectMapper.writeValueAsString(itemRequestDto);
 
         when(itemRequestService.add(any(ItemRequestDto.class), anyLong())).thenAnswer(i -> i.getArguments()[0]);
 
         mockMvc.perform(post("/requests/")
-                        .header("X-Sharer-User-Id", userId)
+                        .header(Helper.HEADER_USER_ID, userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
