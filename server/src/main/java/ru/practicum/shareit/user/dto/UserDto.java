@@ -20,6 +20,7 @@ public class UserDto {
     @NotBlank(message = "Invalid user name", groups = {CreateUserDto.class, UpdateUserDto.class})
     private String name;
 
+
     @NotNull(message = "Empty user name", groups = CreateUserDto.class)
     @Email(message = "Invalid user email", groups = {CreateUserDto.class, UpdateUserDto.class})
     private String email;
