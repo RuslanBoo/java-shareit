@@ -47,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getByOwner(long ownerId) {
-        return itemRepository.findAll()
+        return itemRepository.findAllOrderById()
                 .stream()
                 .filter(item -> isOwner(item, ownerId))
                 .map(item -> setBookings(item, ownerId))
