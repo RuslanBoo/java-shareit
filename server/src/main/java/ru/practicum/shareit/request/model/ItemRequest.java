@@ -16,6 +16,7 @@ import java.util.Objects;
 public class ItemRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "request_id")
     private long id;
 
     @Column(name = "description", nullable = false)
