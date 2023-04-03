@@ -18,6 +18,7 @@ import javax.validation.Valid;
 @Validated
 public class UserController {
     private final UserClient userClient;
+
     @GetMapping
     public ResponseEntity<Object> getAll() {
         return userClient.getAllUsers();
