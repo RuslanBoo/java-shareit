@@ -23,8 +23,8 @@ public class ItemRequestController {
 
     @GetMapping
     public ResponseEntity<Object> getAllByRequestorId(@RequestHeader(value = HEADER_USER_ID_KEY) long requestorId,
-                                                      @PositiveOrZero @RequestParam(name = "from", required = false) Integer from,
-                                                      @PositiveOrZero @RequestParam(name = "size", required = false) Integer size) {
+                                                      @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                                      @Positive @RequestParam(name = "size", defaultValue = "20") Integer size) {
         return itemRequestClient.getAllByRequestorId(requestorId, from, size);
     }
 
@@ -36,8 +36,8 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public ResponseEntity<Object> getAll(@RequestHeader(value = HEADER_USER_ID_KEY) long userId,
-                                         @PositiveOrZero @RequestParam(name = "from", required = false) Integer from,
-                                         @PositiveOrZero @RequestParam(name = "size", required = false) Integer size) {
+                                         @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                         @Positive @RequestParam(name = "size", defaultValue = "20") Integer size) {
         return itemRequestClient.getAll(userId, from, size);
     }
 

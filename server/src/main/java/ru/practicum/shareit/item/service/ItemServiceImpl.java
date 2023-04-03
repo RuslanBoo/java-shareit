@@ -99,7 +99,14 @@ public class ItemServiceImpl implements ItemService {
     public CommentDto commentSave(long itemId, long userId, CommentDto commentDto) {
         Optional<Item> item = itemRepository.findById(itemId);
         User user = userService.findById(userId);
-        List<Booking> bookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now(), null);
+        List<Booking> bookings = bookingRepository.findAllByItemIdAndBookerIdAndStatusAndEndBeforeOrderByStartDesc(
+                        itemId,
+                        userId,
+                        BookingStatus.APPROVED,
+                        LocalDateTime.now(),
+                        null);
+
+        System.out.println(bookings);
 
         if (item.isEmpty()) {
             throw new DataNotFoundException("Item not found");

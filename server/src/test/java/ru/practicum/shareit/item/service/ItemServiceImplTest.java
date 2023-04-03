@@ -210,7 +210,7 @@ class ItemServiceImplTest {
         CommentDto commentDto = commentMapper.toDto(comment);
 
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-        when(bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(anyLong(), any(LocalDateTime.class), any())).thenReturn(List.of());
+        when(bookingRepository.findAllByItemIdAndBookerIdAndStatusAndEndBeforeOrderByStartDesc(anyLong(), anyLong(), any(BookingStatus.class), any(LocalDateTime.class), any())).thenReturn(List.of());
 
         assertThatThrownBy(
                 () -> itemService.commentSave(itemId, userId, commentDto)
@@ -225,7 +225,7 @@ class ItemServiceImplTest {
 
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
         when(userService.findById(anyLong())).thenReturn(user);
-        when(bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(anyLong(), any(LocalDateTime.class), any())).thenReturn(List.of(booking));
+        when(bookingRepository.findAllByItemIdAndBookerIdAndStatusAndEndBeforeOrderByStartDesc(anyLong(), anyLong(), any(BookingStatus.class), any(LocalDateTime.class), any())).thenReturn(List.of(booking));
         when(commentRepository.save(
                 any(Comment.class))).thenAnswer(i -> i.getArguments()[0]);
         CommentDto result = itemService.commentSave(itemId, userId, commentDto);
