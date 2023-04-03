@@ -2,10 +2,12 @@ package ru.practicum.shareit.item;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
+@Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("select i " +
             "from Item i " +
@@ -14,7 +16,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "and i.available is true")
     List<Item> findAllByText(String text);
 
-    List<Item> findAllOrderById();
+    List<Item> findAllByOrderById();
 
     List<Item> findAllByRequestId(long requestId);
 }

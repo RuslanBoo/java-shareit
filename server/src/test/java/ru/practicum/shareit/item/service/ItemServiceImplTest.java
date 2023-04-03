@@ -115,7 +115,7 @@ class ItemServiceImplTest {
 
     @Test
     void getByOwner_shouldReturnEmptyList() {
-        when(itemRepository.findAll()).thenReturn(List.of());
+        when(itemRepository.findAllByOrderById()).thenReturn(List.of());
 
         assertEquals(itemService.getByOwner(userId), List.of());
     }
