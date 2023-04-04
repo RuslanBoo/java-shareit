@@ -100,11 +100,11 @@ public class ItemServiceImpl implements ItemService {
         Optional<Item> item = itemRepository.findById(itemId);
         User user = userService.findById(userId);
         List<Booking> bookings = bookingRepository.findAllByItemIdAndBookerIdAndStatusAndEndBeforeOrderByStartDesc(
-                        itemId,
-                        userId,
-                        BookingStatus.APPROVED,
-                        LocalDateTime.now(),
-                        null);
+                itemId,
+                userId,
+                BookingStatus.APPROVED,
+                LocalDateTime.now(),
+                null);
 
         System.out.println(bookings);
 

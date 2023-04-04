@@ -5,8 +5,6 @@ import ru.practicum.shareit.booking.dto.ShortBookingDto;
 import ru.practicum.shareit.comment.dto.CommentDto;
 
 import javax.persistence.Transient;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
 
