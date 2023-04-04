@@ -1,27 +1,32 @@
 package ru.practicum.shareit.user.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
-@Data
-@Builder
+@Setter
+@Getter
 @RequiredArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserDto {
     private long id;
-
-    @NotNull(message = "Empty user name", groups = CreateUserDto.class)
-    @NotBlank(message = "Invalid user name", groups = {CreateUserDto.class, UpdateUserDto.class})
     private String name;
-
-
-    @NotNull(message = "Empty user name", groups = CreateUserDto.class)
-    @Email(message = "Invalid user email", groups = {CreateUserDto.class, UpdateUserDto.class})
     private String email;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserDto userDto = (UserDto) o;
+        return id == userDto.id && Objects.equals(name, userDto.name) && Objects.equals(email, userDto.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, email);
+    }
 }

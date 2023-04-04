@@ -1,22 +1,32 @@
 package ru.practicum.shareit.comment.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-@Data
+@Setter
+@Getter
+@RequiredArgsConstructor
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class CommentDto {
     private long id;
-
-    @NotBlank(message = "Invalid comment text", groups = {CreateCommentDto.class})
     private String text;
     private String authorName;
     private LocalDateTime created;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CommentDto that = (CommentDto) o;
+        return id == that.id && Objects.equals(text, that.text) && Objects.equals(authorName, that.authorName) && Objects.equals(created, that.created);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, text, authorName, created);
+    }
 }

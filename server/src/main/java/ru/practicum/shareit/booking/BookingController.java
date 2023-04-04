@@ -34,12 +34,16 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}")
-    public BookingDto getById(@PathVariable long bookingId, @RequestHeader(name = USER_ID) long userId) {
+    public BookingDto getById(@PathVariable long bookingId,
+                              @RequestHeader(name = USER_ID) long userId
+    ) {
         return bookingService.getById(bookingId, userId);
     }
 
     @PostMapping
-    public BookingDto create(@RequestHeader(name = USER_ID) long userId, @RequestBody BookingDto bookingDto) {
+    public BookingDto create(@RequestHeader(name = USER_ID) long userId,
+                             @RequestBody BookingDto bookingDto
+    ) {
         return bookingService.create(userId, bookingDto);
     }
 

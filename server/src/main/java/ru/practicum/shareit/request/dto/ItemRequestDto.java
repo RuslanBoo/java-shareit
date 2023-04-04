@@ -1,28 +1,37 @@
 package ru.practicum.shareit.request.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
-@Data
-@Builder
+@Setter
+@Getter
+@RequiredArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor
+@Builder
 public class ItemRequestDto {
+
     @Transient
     private long id;
-
-    @NotBlank(message = "Invalid itemRequest description")
     private String description;
-
     private List<ItemDto> items;
-
     private LocalDateTime created;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ItemRequestDto that = (ItemRequestDto) o;
+        return id == that.id && Objects.equals(description, that.description) && Objects.equals(items, that.items) && Objects.equals(created, that.created);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, description, items, created);
+    }
 }
